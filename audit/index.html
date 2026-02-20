@@ -38,7 +38,7 @@
     <div class="top">
       <div>
         <h1 class="h">AuditVisa <span class="tiny">v0.1</span></h1>
-        <div class="sub">Same-origin audit runner · produces VisaID and evidence table</div>
+        <div class="sub">Worker-proxied audit runner · produces VisaID and evidence table</div>
       </div>
       <div class="row">
         <button class="btn" id="runBtn">Run audit</button>
@@ -55,9 +55,8 @@
             <button class="btn" id="sameBtn" title="Use same origin">Same-origin</button>
           </div>
           <div class="hint">
-            Default uses <code class="mono">location.origin</code> to avoid CORS.
-            If auditing another domain and you see “Fetch error (often CORS)”, deploy this page under the target site
-            or use a server-side fetch proxy (Worker) later.
+            This page calls <code class="mono">/api/visa?target=…</code> (Worker) to avoid CORS.
+            “Same-origin” sets <code class="mono">location.origin</code>. Paste a domain or full URL in the box.
           </div>
         </div>
         <div>
@@ -114,6 +113,7 @@
   const summary = $("summary");
   const visaIdEl = $("visaId");
 
+  // Default: keep current behavior (same origin of this page)
   originInput.value = location.origin;
 
   sameBtn.addEventListener("click", ()=>{
@@ -161,45 +161,143 @@
     }
   }
 
-  async function sha256Hex(str){
-    const enc = new TextEncoder().encode(str);
-    const buf = await crypto.subtle.digest("SHA-256", enc);
-    const arr = Array.from(new Uint8Array(buf));
-    return arr.map(b=>b.toString(16).padStart(2,"0")).join("");
+  function statusToClass(s){
+    if(s === "PASS") return "ok";
+    if(s === "WARN") return "warn";
+    return "fail";
   }
 
-  async function fetchCheck(origin, c){
-    const url = origin + c.path;
-    const started = Date.now();
-    try{
-      const r = await fetch(url, { method:"GET", cache:"no-store" });
-      const ms = Date.now() - started;
+  function normalizeStatus(s){
+    s = String(s || "").toUpperCase().trim();
+    if(s === "OK" || s === "GRANTED" || s === "ALLOW") return "PASS";
+    if(s === "WARNING") return "WARN";
+    if(s === "FAIL" || s === "REJECTED" || s === "DENY" || s === "BLOCK") return "FAIL";
+    if(s === "PASS" || s === "WARN") return s;
+    return "FAIL";
+  }
 
-      const http = r.status;
-      const ct = (r.headers.get("content-type") || "").toLowerCase();
+  function pick(obj, keys, fallback){
+    for(const k of keys){
+      if(obj && obj[k] != null) return obj[k];
+    }
+    return fallback;
+  }
 
-      if(http === 404){
-        return { status: c.critical ? "FAIL":"WARN", http, note:"HTTP 404", ms, url };
+  function renderFromWorker(origin, data){
+    // VisaID
+    const vid = pick(data, ["visa_id","visaId","visa","id"], "");
+    visaIdEl.textContent = vid ? (String(vid).length > 13 ? String(vid).slice(0,12) + "…" : String(vid)) : "—";
+
+    // counts
+    const counts = data && data.counts ? data.counts : null;
+    let pass = Number(pick(counts, ["pass"], NaN));
+    let warn = Number(pick(counts, ["warn"], NaN));
+    let fail = Number(pick(counts, ["fail"], NaN));
+    let total = Number(pick(counts, ["checks","total"], NaN));
+
+    // If counts missing, infer from table
+    const table = Array.isArray(data && data.table) ? data.table
+                : (Array.isArray(data && data.results) ? data.results
+                : (Array.isArray(data && data.evidence) ? data.evidence : []));
+
+    if(!Number.isFinite(total)) total = checks.length;
+    if(!Number.isFinite(pass) || !Number.isFinite(warn) || !Number.isFinite(fail)){
+      pass = 0; warn = 0; fail = 0;
+      for(const r of table){
+        const s = normalizeStatus(pick(r, ["status"], "FAIL"));
+        if(s === "PASS") pass++;
+        else if(s === "WARN") warn++;
+        else fail++;
       }
-      if(http >= 400){
-        return { status: c.critical ? "FAIL":"WARN", http, note:"HTTP " + http, ms, url };
-      }
+    }
 
-      // If expect JSON, try parse for sanity (WARN if invalid)
-      if(c.expect === "json"){
-        const txt = await r.text();
-        try{
-          JSON.parse(txt);
-          return { status:"PASS", http, note:`HTTP ${http} · ${ct || "content-type: (none)"} · ${ms}ms`, ms, url };
-        }catch(e){
-          return { status: c.critical ? "FAIL":"WARN", http, note:`Invalid JSON · ${ms}ms`, ms, url };
+    summary.textContent = `Checks: ${total} · PASS ${pass} · WARN ${warn} · FAIL ${fail}`;
+
+    // verdict
+    const verdictRaw = String(pick(data, ["verdict","decision","status"], "")).toUpperCase();
+    const verdict = verdictRaw || (fail > 0 ? "REJECTED" : (warn > 0 ? "WARN" : "GRANTED"));
+
+    if(verdict === "GRANTED" || verdict === "PASS"){
+      setHeadline("ok", `PASS ✔  EN: All critical checks passed. Visa granted.  中文：必检项全部通过，签证通过。`);
+    }else if(verdict === "WARN" || verdict === "WARNING"){
+      setHeadline("warn", `WARN ⚠  EN: Critical checks passed; optional warnings exist.  中文：必检项通过，但存在可选项警告。`);
+    }else{
+      setHeadline("fail", `FAIL ✘  EN: One or more critical checks failed. Visa rejected.  中文：存在必检项失败，签证拒签。`);
+    }
+
+    // rows
+    rows.innerHTML = "";
+    if(table.length){
+      for(const r of table){
+        const s = normalizeStatus(pick(r, ["status"], "FAIL"));
+        const check = String(pick(r, ["check","key","name"], "—"));
+        const path = String(pick(r, ["path"], "—"));
+
+        const http = pick(r, ["http","status_code"], null);
+        const ms = pick(r, ["ms","latency_ms","time_ms"], null);
+        const ct = pick(r, ["content_type","contentType","ct"], null);
+        const note = String(pick(r, ["evidence","note","message"], ""));
+
+        const url = String(pick(r, ["url"], origin + path));
+
+        const parts = [];
+        if(note) parts.push(note);
+        else{
+          const p2 = [];
+          if(http != null) p2.push("HTTP " + http);
+          if(ct) p2.push(String(ct));
+          if(ms != null) p2.push(String(ms) + "ms");
+          parts.push(p2.join(" · ") || "—");
         }
-      }
 
-      return { status:"PASS", http, note:`HTTP ${http} · ${ct || "content-type: (none)"} · ${ms}ms`, ms, url };
-    }catch(err){
-      // Most common: CORS / DNS / blocked / mixed content
-      return { status: c.critical ? "FAIL":"WARN", http:0, note:"Fetch error (often CORS)", ms: Date.now()-started, url };
+        const evHtml = `
+          <div class="tiny">
+            <div><strong>${esc(parts.join(" · "))}</strong></div>
+            <div>URL: <code class="mono">${esc(url)}</code></div>
+          </div>
+        `;
+        addRow(s, check, path, evHtml);
+      }
+      return;
+    }
+
+    // Fallback: show expected checks with “no table”
+    for(const c of checks){
+      addRow("WARN", c.key, c.path, `<div class="tiny"><strong>No evidence table returned</strong></div>`);
+    }
+  }
+
+  async function runViaWorker(origin){
+    const url = `/api/visa?target=${encodeURIComponent(origin)}`;
+    const started = Date.now();
+    const r = await fetch(url, { method:"GET", cache:"no-store" });
+    const ms = Date.now() - started;
+
+    let txt = "";
+    try{ txt = await r.text(); }catch(e){}
+
+    if(!r.ok){
+      // try to show any JSON error
+      let msg = `HTTP ${r.status}`;
+      try{
+        const j = JSON.parse(txt);
+        msg = String(pick(j, ["error","message"], msg));
+      }catch(e){}
+      const err = new Error(msg);
+      err.http = r.status;
+      err.ms = ms;
+      err.url = url;
+      throw err;
+    }
+
+    try{
+      return JSON.parse(txt);
+    }catch(e){
+      const err = new Error("Invalid JSON from Worker");
+      err.http = r.status;
+      err.ms = ms;
+      err.url = url;
+      throw err;
     }
   }
 
@@ -211,50 +309,26 @@
 
     const origin = normalizeOrigin(originInput.value);
 
-    let pass=0, warn=0, fail=0;
-    const evidence = [];
-    for(const c of checks){
-      const res = await fetchCheck(origin, c);
-      evidence.push({ key:c.key, path:c.path, critical:c.critical, ...res });
-
-      if(res.status === "PASS") pass++;
-      else if(res.status === "WARN") warn++;
-      else fail++;
+    try{
+      const data = await runViaWorker(origin);
+      renderFromWorker(origin, data);
+    }catch(err){
+      setHeadline("fail", `FAIL ✘  EN: Audit runner error.  中文：审计执行失败。`);
+      summary.textContent = `Checks: — · PASS — · WARN — · FAIL —`;
 
       const evHtml = `
         <div class="tiny">
-          <div><strong>${esc(res.note)}</strong></div>
-          <div>URL: <code class="mono">${esc(res.url)}</code></div>
+          <div><strong>${esc(err && err.message ? err.message : "Unknown error")}</strong></div>
+          <div>Endpoint: <code class="mono">/api/visa</code></div>
         </div>
       `;
-      addRow(res.status, c.key, c.path, evHtml);
+
+      // show a single row as evidence
+      rows.innerHTML = "";
+      addRow("FAIL", "worker", "/api/visa?target=…", evHtml);
+    }finally{
+      runBtn.disabled = false;
     }
-
-    const total = checks.length;
-    summary.textContent = `Checks: ${total} · PASS ${pass} · WARN ${warn} · FAIL ${fail}`;
-
-    const criticalFails = evidence.filter(x => x.critical && x.status !== "PASS").length;
-    const visaStatus = criticalFails === 0 ? (warn>0 ? "WARN" : "PASS") : "FAIL";
-
-    // Deterministic summary string for VisaID
-    const visaSummary =
-      `policy=AuditVisa v0.1\n` +
-      `origin=${origin}\n` +
-      evidence.map(x => `${x.key} ${x.path} ${x.status} ${x.http}`).join("\n");
-
-    const visa = await sha256Hex(visaSummary);
-
-    visaIdEl.textContent = visa.slice(0, 12) + "…";
-
-    if(visaStatus === "PASS"){
-      setHeadline("ok", `PASS ✔  EN: All critical checks passed. Visa granted.  中文：必检项全部通过，签证通过。`);
-    }else if(visaStatus === "WARN"){
-      setHeadline("warn", `WARN ⚠  EN: Critical checks passed; optional warnings exist.  中文：必检项通过，但存在可选项警告。`);
-    }else{
-      setHeadline("fail", `FAIL ✘  EN: One or more critical checks failed. Visa rejected.  中文：存在必检项失败，签证拒签。`);
-    }
-
-    runBtn.disabled = false;
   }
 })();
 </script>
