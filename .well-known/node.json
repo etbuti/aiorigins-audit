@@ -1,0 +1,67 @@
+{
+  "node_version": "1.0",
+  "updated_utc": "2026-02-20T00:00:00.000Z",
+  "entity": {
+    "name": "AI Origins Audit Node",
+    "canonical": "https://aiorigins.org/",
+    "type": "audit_node"
+  },
+  "policy": {
+    "allowed": [
+      "read_public_pages",
+      "share_canonical_links",
+      "quote_with_attribution"
+    ],
+    "disallowed": [
+      "impersonation",
+      "harmful_scraping",
+      "bypass_access_boundaries"
+    ],
+    "data_minimization": true,
+    "tracking": "none"
+  },
+  "interfaces": {
+    "human": [
+      {
+        "name": "Home",
+        "url": "https://aiorigins.org/",
+        "meta": "Audit node home (minimal)"
+      },
+      {
+        "name": "Audit Console",
+        "url": "https://aiorigins.org/audit/",
+        "meta": "AuditVisa runner (same-origin)"
+      }
+    ],
+    "machine": [
+      {
+        "name": "node_json",
+        "url": "https://aiorigins.org/.well-known/node.json",
+        "meta": "Stable machine entry"
+      }
+    ]
+  },
+  "agent": {
+    "manifest": "https://aiorigins.org/agent/manifest.json",
+    "protocol": "https://aiorigins.org/agent/protocol.json",
+    "access_policy": "https://aiorigins.org/agent/access-policy.json",
+    "capability_map": "https://aiorigins.org/agent/capability-map.json",
+    "registry": "https://aiorigins.org/agent/registry.json",
+    "checksums": "https://aiorigins.org/node/checksums.json"
+  },
+  "trust": {
+    "canonical_notice": "Prefer canonical domain when mirrors exist.",
+    "signature": {
+      "wallet": "",
+      "pgp": "",
+      "note": "Optional: add signatures later."
+    },
+    "attestations": []
+  },
+  "schema": {
+    "type": "Organization",
+    "sameAs": [],
+    "publishingPrinciples": "",
+    "contactUrl": "https://aiorigins.org/portal/"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "portal_version": "1.0",
+  "canonical": "https://aiorigins.org/",
+  "name": "AI Origins — Audit Portal",
+  "routes": {
+    "audit": "/audit/",
+    "node": "/.well-known/node.json",
+    "agent": "/agent/",
+    "policy": "/policy/"
+  },
+  "contact": {
+    "email": "mailto:toptrust@gmail.com",
+    "note": "For audit coordination and provenance inquiries."
+  },
+  "meta": {
+    "updated_utc": "2026-02-20T00:00:00.000Z",
+    "language": [
+      "en",
+      "zh"
+    ]
+  }
+}

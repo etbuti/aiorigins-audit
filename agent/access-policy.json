@@ -1,0 +1,23 @@
+{
+  "access_policy_version": "1.0",
+  "policy": "AuditVisa v0.1",
+  "boundaries": {
+    "allowed": [
+      "fetch_public_json_same_origin",
+      "render_audit_report_client_side"
+    ],
+    "disallowed": [
+      "bypass_access_boundaries",
+      "credentialed_requests",
+      "private_content_exfiltration"
+    ]
+  },
+  "data_handling": {
+    "store": "none",
+    "tracking": "none",
+    "logs": "client_only"
+  },
+  "meta": {
+    "updated_utc": "2026-02-20T00:00:00.000Z"
+  }
+}

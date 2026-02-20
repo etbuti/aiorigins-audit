@@ -1,0 +1,16 @@
+{
+  "registry_version": "1.0",
+  "agent": "auditvisa",
+  "entries": [
+    {
+      "id": "auditvisa",
+      "name": "AuditVisa Runner",
+      "url": "https://aiorigins.org/audit/",
+      "role": "auditor",
+      "status": "active"
+    }
+  ],
+  "meta": {
+    "updated_utc": "2026-02-20T00:00:00.000Z"
+  }
+}

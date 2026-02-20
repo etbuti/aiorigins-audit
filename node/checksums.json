@@ -1,0 +1,32 @@
+{
+  "checksums_version": "1.0",
+  "algo": "sha256",
+  "generated_utc": "2026-02-20T00:00:00.000Z",
+  "files": [
+    {
+      "path": "/.well-known/node.json",
+      "sha256": ""
+    },
+    {
+      "path": "/portal/portal.json",
+      "sha256": ""
+    },
+    {
+      "path": "/agent/manifest.json",
+      "sha256": ""
+    },
+    {
+      "path": "/agent/protocol.json",
+      "sha256": ""
+    },
+    {
+      "path": "/agent/access-policy.json",
+      "sha256": ""
+    },
+    {
+      "path": "/agent/capability-map.json",
+      "sha256": ""
+    }
+  ],
+  "note": "Blank hashes are placeholders for bootstrap. Fill later to enforce immutability."
+}

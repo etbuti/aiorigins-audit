@@ -1,0 +1,45 @@
+{
+  "protocol_version": "1.0",
+  "name": "AuditVisa Protocol",
+  "policy": "AuditVisa v0.1",
+  "input": {
+    "target_origin": "same_origin_default",
+    "paths": [
+      "/.well-known/node.json",
+      "/portal/portal.json",
+      "/agent/manifest.json",
+      "/agent/protocol.json",
+      "/agent/access-policy.json",
+      "/agent/capability-map.json",
+      "/agent/registry.json",
+      "/node/checksums.json"
+    ]
+  },
+  "output": {
+    "visa": {
+      "id": "sha256(summary)",
+      "status": "PASS|WARN|FAIL",
+      "counts": {
+        "pass": "number",
+        "warn": "number",
+        "fail": "number"
+      }
+    },
+    "evidence": [
+      {
+        "check": "string",
+        "path": "string",
+        "status": "PASS|WARN|FAIL",
+        "http": "number",
+        "note": "string"
+      }
+    ]
+  },
+  "meta": {
+    "updated_utc": "2026-02-20T00:00:00.000Z",
+    "notes": [
+      "Same-origin audit avoids browser CORS limits.",
+      "Cross-origin audits should use a server-side fetch proxy (Worker) later."
+    ]
+  }
+}

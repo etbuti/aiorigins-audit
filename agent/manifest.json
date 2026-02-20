@@ -1,0 +1,32 @@
+{
+  "manifest_version": "1.0",
+  "agent": {
+    "name": "AuditVisa Runner",
+    "id": "auditvisa",
+    "home": "https://aiorigins.org/audit/",
+    "canonical": "https://aiorigins.org/"
+  },
+  "endpoints": {
+    "protocol": "/agent/protocol.json",
+    "access_policy": "/agent/access-policy.json",
+    "capability_map": "/agent/capability-map.json",
+    "registry": "/agent/registry.json"
+  },
+  "compat": {
+    "policy": "AuditVisa v0.1",
+    "checks": [
+      "node.json",
+      "portal.json",
+      "manifest.json",
+      "protocol.json",
+      "access-policy.json",
+      "capability-map.json",
+      "registry.json (optional)",
+      "checksums.json (optional)"
+    ]
+  },
+  "meta": {
+    "updated_utc": "2026-02-20T00:00:00.000Z",
+    "note": "Minimal manifest for bootstrapping audits. Extend later."
+  }
+}

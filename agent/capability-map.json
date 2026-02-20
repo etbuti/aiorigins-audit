@@ -1,0 +1,30 @@
+{
+  "capability_map_version": "1.0",
+  "agent": "auditvisa",
+  "capabilities": [
+    {
+      "name": "check_http_status",
+      "desc": "Fetch a list of known paths and record HTTP status and basic evidence."
+    },
+    {
+      "name": "validate_json",
+      "desc": "Attempt to parse JSON and mark WARN if invalid JSON."
+    },
+    {
+      "name": "visa_id",
+      "desc": "Compute a SHA-256 based VisaID from a deterministic summary."
+    },
+    {
+      "name": "render_report",
+      "desc": "Render results in a human-readable table (EN+中文)."
+    }
+  ],
+  "limits": {
+    "same_origin_only": true,
+    "max_checks": 16,
+    "timeout_ms_each": 8000
+  },
+  "meta": {
+    "updated_utc": "2026-02-20T00:00:00.000Z"
+  }
+}

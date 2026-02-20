@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AuditVisa · v0.1</title>
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <style>
+    :root{ --bg:#0b0c10; --card:#12141a; --muted:#a7b0c0; --fg:#e9eef7; --line:#242a36; }
+    html,body{ background:var(--bg); color:var(--fg); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin:0; }
+    .wrap{ max-width: 980px; margin: 28px auto; padding: 0 16px; }
+    .top{ display:flex; gap:14px; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; }
+    .h{ font-size: 22px; margin:0; letter-spacing:.2px; }
+    .sub{ color:var(--muted); margin:6px 0 0; font-size: 13px; }
+    .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-top:14px; }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .pill{ border:1px solid var(--line); border-radius: 999px; padding:6px 10px; font-size: 12px; color:var(--muted); }
+    .pill strong{ color:var(--fg); font-weight:600; }
+    .btn{ background:#1a2030; border:1px solid var(--line); color:var(--fg); border-radius:12px; padding:10px 12px; cursor:pointer; font-size: 13px; }
+    .btn:hover{ filter:brightness(1.08); }
+    .btn:disabled{ opacity:.5; cursor:not-allowed; }
+    .status{ font-size: 14px; margin-top: 6px; }
+    .ok{ color:#8ef0a1; }
+    .warn{ color:#ffd479; }
+    .fail{ color:#ff8a8a; }
+    table{ width:100%; border-collapse:collapse; margin-top:10px; }
+    th,td{ border-top:1px solid var(--line); padding:10px 8px; font-size: 13px; vertical-align:top; }
+    th{ text-align:left; color:var(--muted); font-weight:600; }
+    code.mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; }
+    .tiny{ color:var(--muted); font-size: 12px; }
+    .footer{ color:var(--muted); font-size: 12px; margin-top: 14px; }
+    input[type="text"]{ width:min(560px, 100%); background:#0f1117; color:var(--fg); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:13px; }
+    .hint{ color:var(--muted); font-size: 12px; margin-top:6px; line-height:1.45; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1 class="h">AuditVisa <span class="tiny">v0.1</span></h1>
+        <div class="sub">Same-origin audit runner · produces VisaID and evidence table</div>
+      </div>
+      <div class="row">
+        <button class="btn" id="runBtn">Run audit</button>
+        <span class="pill">Policy: <strong>AuditVisa v0.1</strong></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <div class="tiny">Target origin</div>
+          <div class="row" style="margin-top:6px;">
+            <input id="originInput" type="text" spellcheck="false" />
+            <button class="btn" id="sameBtn" title="Use same origin">Same-origin</button>
+          </div>
+          <div class="hint">
+            Default uses <code class="mono">location.origin</code> to avoid CORS.
+            If auditing another domain and you see “Fetch error (often CORS)”, deploy this page under the target site
+            or use a server-side fetch proxy (Worker) later.
+          </div>
+        </div>
+        <div>
+          <div class="tiny">VisaID</div>
+          <div class="pill"><code class="mono" id="visaId">—</code></div>
+        </div>
+      </div>
+
+      <div class="status" id="headline">Idle.</div>
+      <div class="tiny" id="summary">Checks: — · PASS — · WARN — · FAIL —</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:92px;">Status</th>
+            <th style="width:190px;">Check</th>
+            <th>Path</th>
+            <th style="width:240px;">Evidence</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+
+      <div class="footer">
+        EN: Critical checks must PASS. Any FAIL ⇒ Visa rejected.<br/>
+        中文：必检项必须通过。存在 FAIL ⇒ 拒签。
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // c:true => critical (FAIL rejects visa)
+  // c:false => optional (missing => WARN)
+  const checks = [
+    { key:"node.json",        path:"/.well-known/node.json",        critical:true,  expect:"json" },
+    { key:"portal.json",      path:"/portal/portal.json",           critical:true,  expect:"json" },
+    { key:"manifest.json",    path:"/agent/manifest.json",          critical:true,  expect:"json" },
+    { key:"protocol.json",    path:"/agent/protocol.json",          critical:true,  expect:"json" },
+    { key:"access-policy",    path:"/agent/access-policy.json",     critical:true,  expect:"json" },
+    { key:"capability-map",   path:"/agent/capability-map.json",    critical:true,  expect:"json" },
+
+    // optional
+    { key:"registry.json",    path:"/agent/registry.json",          critical:false, expect:"json" },
+    { key:"checksums.json",   path:"/node/checksums.json",          critical:false, expect:"json" }
+  ];
+
+  const $ = (id)=>document.getElementById(id);
+  const runBtn = $("runBtn");
+  const sameBtn = $("sameBtn");
+  const originInput = $("originInput");
+  const rows = $("rows");
+  const headline = $("headline");
+  const summary = $("summary");
+  const visaIdEl = $("visaId");
+
+  originInput.value = location.origin;
+
+  sameBtn.addEventListener("click", ()=>{
+    originInput.value = location.origin;
+  });
+
+  runBtn.addEventListener("click", run);
+
+  function esc(s){
+    return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+
+  function setHeadline(type, text){
+    headline.className = "status " + (type || "");
+    headline.textContent = text;
+  }
+
+  function addRow(status, check, path, evidence){
+    const tr = document.createElement("tr");
+    const sClass = status === "PASS" ? "ok" : (status === "WARN" ? "warn" : "fail");
+    tr.innerHTML = `
+      <td class="${sClass}"><strong>${esc(status)}</strong></td>
+      <td>${esc(check)}</td>
+      <td><code class="mono">${esc(path)}</code></td>
+      <td>${evidence}</td>
+    `;
+    rows.appendChild(tr);
+  }
+
+  function normalizeOrigin(o){
+    o = (o || "").trim();
+    if(!o) return location.origin;
+    // allow user to paste full url; keep scheme+host+port only
+    try{
+      const u = new URL(o);
+      return u.origin;
+    }catch(e){
+      // if user pasted origin without scheme, attempt https
+      try{
+        const u2 = new URL("https://" + o.replace(/^\/+/, ""));
+        return u2.origin;
+      }catch(e2){
+        return location.origin;
+      }
+    }
+  }
+
+  async function sha256Hex(str){
+    const enc = new TextEncoder().encode(str);
+    const buf = await crypto.subtle.digest("SHA-256", enc);
+    const arr = Array.from(new Uint8Array(buf));
+    return arr.map(b=>b.toString(16).padStart(2,"0")).join("");
+  }
+
+  async function fetchCheck(origin, c){
+    const url = origin + c.path;
+    const started = Date.now();
+    try{
+      const r = await fetch(url, { method:"GET", cache:"no-store" });
+      const ms = Date.now() - started;
+
+      const http = r.status;
+      const ct = (r.headers.get("content-type") || "").toLowerCase();
+
+      if(http === 404){
+        return { status: c.critical ? "FAIL":"WARN", http, note:"HTTP 404", ms, url };
+      }
+      if(http >= 400){
+        return { status: c.critical ? "FAIL":"WARN", http, note:"HTTP " + http, ms, url };
+      }
+
+      // If expect JSON, try parse for sanity (WARN if invalid)
+      if(c.expect === "json"){
+        const txt = await r.text();
+        try{
+          JSON.parse(txt);
+          return { status:"PASS", http, note:`HTTP ${http} · ${ct || "content-type: (none)"} · ${ms}ms`, ms, url };
+        }catch(e){
+          return { status: c.critical ? "FAIL":"WARN", http, note:`Invalid JSON · ${ms}ms`, ms, url };
+        }
+      }
+
+      return { status:"PASS", http, note:`HTTP ${http} · ${ct || "content-type: (none)"} · ${ms}ms`, ms, url };
+    }catch(err){
+      // Most common: CORS / DNS / blocked / mixed content
+      return { status: c.critical ? "FAIL":"WARN", http:0, note:"Fetch error (often CORS)", ms: Date.now()-started, url };
+    }
+  }
+
+  async function run(){
+    runBtn.disabled = true;
+    rows.innerHTML = "";
+    visaIdEl.textContent = "—";
+    setHeadline("", "Running…");
+
+    const origin = normalizeOrigin(originInput.value);
+
+    let pass=0, warn=0, fail=0;
+    const evidence = [];
+    for(const c of checks){
+      const res = await fetchCheck(origin, c);
+      evidence.push({ key:c.key, path:c.path, critical:c.critical, ...res });
+
+      if(res.status === "PASS") pass++;
+      else if(res.status === "WARN") warn++;
+      else fail++;
+
+      const evHtml = `
+        <div class="tiny">
+          <div><strong>${esc(res.note)}</strong></div>
+          <div>URL: <code class="mono">${esc(res.url)}</code></div>
+        </div>
+      `;
+      addRow(res.status, c.key, c.path, evHtml);
+    }
+
+    const total = checks.length;
+    summary.textContent = `Checks: ${total} · PASS ${pass} · WARN ${warn} · FAIL ${fail}`;
+
+    const criticalFails = evidence.filter(x => x.critical && x.status !== "PASS").length;
+    const visaStatus = criticalFails === 0 ? (warn>0 ? "WARN" : "PASS") : "FAIL";
+
+    // Deterministic summary string for VisaID
+    const visaSummary =
+      `policy=AuditVisa v0.1\n` +
+      `origin=${origin}\n` +
+      evidence.map(x => `${x.key} ${x.path} ${x.status} ${x.http}`).join("\n");
+
+    const visa = await sha256Hex(visaSummary);
+
+    visaIdEl.textContent = visa.slice(0, 12) + "…";
+
+    if(visaStatus === "PASS"){
+      setHeadline("ok", `PASS ✔  EN: All critical checks passed. Visa granted.  中文：必检项全部通过，签证通过。`);
+    }else if(visaStatus === "WARN"){
+      setHeadline("warn", `WARN ⚠  EN: Critical checks passed; optional warnings exist.  中文：必检项通过，但存在可选项警告。`);
+    }else{
+      setHeadline("fail", `FAIL ✘  EN: One or more critical checks failed. Visa rejected.  中文：存在必检项失败，签证拒签。`);
+    }
+
+    runBtn.disabled = false;
+  }
+})();
+</script>
+</body>
+</html>
