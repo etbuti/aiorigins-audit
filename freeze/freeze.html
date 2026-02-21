@@ -42,6 +42,23 @@
   const RPC = "https://rpc.evanbei.com/agent/rpc";
   document.getElementById("rpcUrl").textContent = RPC;
 
+function pickHashFromPending(p) {
+  // 支持两种结构：result 是数组 或 包一层
+  const list = Array.isArray(p?.result) ? p.result : (p?.result?.items || []);
+  const first = list && list.length ? list[0] : null;
+  const h = first?.ops_hash;
+  if (h) document.getElementById("opsHash").value = h;
+  return h;
+}
+
+async function pendingFillFirst() {
+  const p = await call("ops_pending_list");
+  show(p);
+  pickHashFromPending(p);
+}
+
+// 页面打开就跑一次
+pendingFillFirst();  
  async function pending() {
   show(await call("ops_pending_list"));
 }
