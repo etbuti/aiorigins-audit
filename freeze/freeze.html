@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SA Audit · Freeze Console</title>
+  <style>
+    body{font-family:Arial,system-ui;max-width:980px;margin:48px auto;padding:0 16px;}
+    h1{font-size:18px;margin:0 0 12px;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0;}
+    select{padding:10px 12px;font-size:14px;min-width:340px;}
+    button{padding:10px 12px;font-size:14px;cursor:pointer;}
+    button[disabled]{opacity:.45;cursor:not-allowed;}
+    pre{background:#f6f6f6;padding:12px;border-radius:10px;overflow:auto;white-space:pre-wrap;}
+    .muted{opacity:.65;font-size:12px;margin-top:6px;}
+    .k{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#eee;font-size:12px;margin-left:6px;}
+  </style>
+</head>
+<body>
+  <h1>SA Audit · Freeze Console <span class="pill">manual override</span></h1>
+  <div class="muted">
+    Minimal human intervention interface. Default mode is autonomous; this exists for last-resort circuit-break.
+  </div>
+
+  <div class="row">
+    <label class="k">Case</label>
+    <select id="caseSelect"></select>
+    <button id="btnRefresh">Refresh</button>
+    <button id="btnFreeze">Freeze</button>
+    <button id="btnUnfreeze">Unfreeze</button>
+  </div>
+
+  <div class="row">
+    <div class="muted k" id="meta">—</div>
+  </div>
+
+  <h2 style="font-size:14px;margin:18px 0 8px;">Status (selected case)</h2>
+  <pre id="out">—</pre>
+
+  <h2 style="font-size:14px;margin:18px 0 8px;">Raw status_all</h2>
+  <pre id="all">—</pre>
+
+<script>
+  const RPC_URL = "http://rpc.evanbei.com:8787/agent/rpc";
+
+  async function rpc(method, params, id=1){
+    const r = await fetch(RPC_URL, {
+      method: "POST",
+      headers: {"content-type":"application/json"},
+      body: JSON.stringify({method, params, id})
+    });
+    return r.json();
+  }
+
+  function setText(id, x){
+    document.getElementById(id).textContent =
+      (typeof x === "string") ? x : JSON.stringify(x, null, 2);
+  }
+
+  function getCaseId(){
+    return document.getElementById("caseSelect").value;
+  }
+
+  async function loadAll(){
+    const res = await rpc("status_all", {}, 100);
+    setText("all", res?.result ?? res);
+
+    const cases = res?.result?.cases || [];
+    const sel = document.getElementById("caseSelect");
+    sel.innerHTML = "";
+    for (const c of cases){
+      const opt = document.createElement("option");
+      opt.value = c.case_id;
+      opt.textContent = `${c.case_id}  (frozen=${c.effective_frozen})`;
+      sel.appendChild(opt);
+    }
+    if (cases.length === 0){
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "(no cases)";
+      sel.appendChild(opt);
+      document.getElementById("btnFreeze").disabled = true;
+      document.getElementById("btnUnfreeze").disabled = true;
+    }
+  }
+
+  async function refreshSelected(){
+    const case_id = getCaseId();
+    if (!case_id) return;
+
+    const res = await rpc("status", {case_id}, 101);
+    setText("out", res?.result ?? res);
+
+    document.getElementById("btnFreeze").disabled = false;
+    document.getElementById("btnUnfreeze").disabled = false;
+
+    document.getElementById("meta").textContent =
+      `rpc=${RPC_URL} · case_id=${case_id}`;
+  }
+
+  async function doFreeze(){
+    const case_id = getCaseId();
+    const res = await rpc("freeze", {case_id}, 200); // alias exists in agent_rpc.go
+    setText("out", res?.result ?? res);
+    await loadAll();
+    await refreshSelected();
+  }
+
+  async function doUnfreeze(){
+    const case_id = getCaseId();
+    const res = await rpc("unfreeze", {case_id}, 201);
+    setText("out", res?.result ?? res);
+    await loadAll();
+    await refreshSelected();
+  }
+
+  document.getElementById("btnRefresh").onclick = async ()=>{ await loadAll(); await refreshSelected(); };
+  document.getElementById("btnFreeze").onclick = doFreeze;
+  document.getElementById("btnUnfreeze").onclick = doUnfreeze;
+  document.getElementById("caseSelect").onchange = refreshSelected;
+
+  (async function init(){
+    await loadAll();
+    await refreshSelected();
+  })();
+</script>
+</body>
+</html>
