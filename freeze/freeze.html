@@ -1,159 +1,102 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>SA Audit · Freeze Console</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>sa_economy · Freeze Console</title>
+  <meta name="robots" content="noindex,nofollow,noarchive" />
   <style>
-    body{font-family:Arial,system-ui;max-width:1000px;margin:48px auto;padding:0 16px;}
-    h1{font-size:18px;margin:0 0 10px;}
-    .muted{opacity:.65;font-size:12px;margin:6px 0 14px;}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0;}
-    select,input{padding:10px 12px;font-size:14px;}
-    select{min-width:360px;}
-    input{min-width:520px;}
-    button{padding:10px 12px;font-size:14px;cursor:pointer;}
-    button[disabled]{opacity:.45;cursor:not-allowed;}
-    pre{background:#f6f6f6;padding:12px;border-radius:10px;overflow:auto;white-space:pre-wrap;}
-    .k{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
-    .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#eee;font-size:12px;margin-left:6px;}
-    .ok{font-weight:700;}
+    body{font-family:ui-monospace, SFMono-Regular, Menlo, monospace; max-width:980px; margin:40px auto; padding:0 16px;}
+    h1{font-size:18px;margin:0 0 12px;}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0;}
+    input{padding:8px 10px; border:1px solid #ddd; border-radius:10px; min-width:260px;}
+    button{padding:8px 12px; border:1px solid #ddd; border-radius:12px; background:#fff; cursor:pointer;}
+    button:hover{border-color:#999;}
+    pre{background:#0b0b0b; color:#e9e9e9; padding:14px; border-radius:14px; overflow:auto; min-height:220px;}
+    .hint{opacity:.7; font-size:12px;}
+    .ok{color:#0a0;}
+    .bad{color:#c00;}
   </style>
 </head>
 <body>
-  <h1>SA Audit · Freeze Console <span class="pill">manual override</span></h1>
-  <div class="muted">
-    This is a minimal human intervention interface. Actions are staged: <span class="k">create → verify quorum → apply</span>.
-    Default mode is autonomous; use this only as a last-resort circuit-break.
+  <h1>sa_economy · Freeze Console</h1>
+  <div class="hint">RPC: <span id="rpcUrl"></span></div>
+
+  <div class="row">
+    <input id="caseId" placeholder="case_id (e.g. case3)" value="case3" />
+    <button onclick="statusAll()">status_all</button>
+    <button onclick="statusOne()">status</button>
+    <button onclick="freeze()">ops_freeze</button>
+    <button onclick="unfreeze()">ops_unfreeze</button>
   </div>
 
   <div class="row">
-    <label class="k">Case</label>
-    <select id="caseSelect"></select>
-    <button id="btnRefresh">Refresh</button>
+    <input id="opsHash" placeholder="ops_hash" />
+    <button onclick="getAction()">ops_action_get</button>
+    <button onclick="verifyOps()">verify_ops</button>
   </div>
 
-  <div class="row">
-    <button id="btnCreateFreeze">Create Freeze Action</button>
-    <button id="btnCreateUnfreeze">Create Unfreeze Action</button>
-  </div>
-
-  <div class="row">
-    <label class="k">ops_hash</label>
-    <input id="opsHash" class="k" placeholder="(created ops_hash will appear here)"/>
-    <button id="btnVerify">Verify</button>
-    <button id="btnApply" disabled>Apply</button>
-  </div>
-
-  <div class="row">
-    <div class="muted k" id="meta">—</div>
-    <div class="muted k" id="verifyOut">verify: —</div>
-  </div>
-
-  <h2 style="font-size:14px;margin:18px 0 8px;">Status (selected case)</h2>
-  <pre id="statusOut">—</pre>
-
-  <h2 style="font-size:14px;margin:18px 0 8px;">Raw status_all</h2>
-  <pre id="allOut">—</pre>
+  <pre id="out">{ ready }</pre>
 
 <script>
-  // RPC endpoint (from cmd/sa/rpcserve.go default path)
-  const RPC_URL = "http://rpc.evanbei.com/agent/rpc";
+  const RPC = "https://rpc.evanbei.com/agent/rpc";
+  document.getElementById("rpcUrl").textContent = RPC;
 
-  async function rpc(method, params, id=1){
-    const r = await fetch(RPC_URL, {
+  function show(obj) {
+    document.getElementById("out").textContent = JSON.stringify(obj, null, 2);
+  }
+
+  async function call(method, params = undefined) {
+    const payload = { method, id: Date.now() };
+    if (params) payload.params = params;
+
+    const res = await fetch(RPC, {
       method: "POST",
-      headers: {"content-type":"application/json"},
-      body: JSON.stringify({method, params, id})
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
     });
-    return r.json();
-  }
 
-  function setText(id, x){
-    document.getElementById(id).textContent =
-      (typeof x === "string") ? x : JSON.stringify(x, null, 2);
-  }
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = { http_status: res.status, raw: text }; }
 
-  function getCaseId(){ return document.getElementById("caseSelect").value; }
-  function getOpsHash(){ return document.getElementById("opsHash").value.trim(); }
-  function setOpsHash(h){ document.getElementById("opsHash").value = h || ""; }
-
-  async function loadAll(){
-    const res = await rpc("status_all", {}, 100);
-    setText("allOut", res?.result ?? res);
-
-    const cases = res?.result?.cases || [];
-    const sel = document.getElementById("caseSelect");
-    const current = sel.value;
-    sel.innerHTML = "";
-    for (const c of cases){
-      const opt = document.createElement("option");
-      opt.value = c.case_id;
-      opt.textContent = `${c.case_id}  (frozen=${c.effective_frozen})`;
-      sel.appendChild(opt);
+    if (!res.ok) {
+      // keep both HTTP status + json error
+      data.http_status = res.status;
     }
-    if (current && cases.some(x => x.case_id === current)) sel.value = current;
+    return data;
   }
 
-  async function refreshStatus(){
-    const case_id = getCaseId();
-    if (!case_id) return;
-    const res = await rpc("status", {case_id}, 101);
-    setText("statusOut", res?.result ?? res);
-    document.getElementById("meta").textContent = `rpc=${RPC_URL} · case_id=${case_id}`;
+  async function statusAll() {
+    show(await call("status_all"));
   }
-
-  async function createAction(kind){
-    const case_id = getCaseId();
-    const method = (kind === "freeze") ? "ops_freeze" : "ops_unfreeze";
-    const res = await rpc(method, {case_id}, kind === "freeze" ? 200 : 201);
-
-    // Expect { action, case_id, note, ops_hash }
-    const ops_hash = res?.result?.ops_hash || "";
-    setOpsHash(ops_hash);
-    document.getElementById("btnApply").disabled = true;
-    document.getElementById("verifyOut").textContent = "verify: —";
-    setText("statusOut", res?.result ?? res); // show immediate response
+  async function statusOne() {
+    const case_id = document.getElementById("caseId").value.trim();
+    show(await call("status", { case_id }));
   }
-
-  async function verify(){
-    const hash = getOpsHash();
-    if (!hash) {
-      document.getElementById("verifyOut").textContent = "verify: (missing ops_hash)";
-      return;
-    }
-    const res = await rpc("verify_ops", {hash}, 300);
-    const ok = !!res?.result?.ok;
-    document.getElementById("verifyOut").textContent = `verify: ok=${ok} · hash=${res?.result?.hash || hash}`;
-    document.getElementById("btnApply").disabled = !ok;
-    return ok;
+  async function freeze() {
+    const case_id = document.getElementById("caseId").value.trim();
+    const r = await call("ops_freeze", { case_id });
+    show(r);
+    // convenience: auto-fill ops_hash
+    const h = r?.result?.ops_hash;
+    if (h) document.getElementById("opsHash").value = h;
   }
-
-  async function apply(){
-    const hash = getOpsHash();
-    if (!hash) return;
-
-    // Optional: re-verify before apply
-    const ok = await verify();
-    if (!ok) return;
-
-    const res = await rpc("ops_apply", {hash}, 400);
-    setText("statusOut", res?.result ?? res);
-    await loadAll();
-    await refreshStatus();
+  async function unfreeze() {
+    const case_id = document.getElementById("caseId").value.trim();
+    const r = await call("ops_unfreeze", { case_id });
+    show(r);
+    const h = r?.result?.ops_hash;
+    if (h) document.getElementById("opsHash").value = h;
   }
-
-  document.getElementById("btnRefresh").onclick = async ()=>{ await loadAll(); await refreshStatus(); };
-  document.getElementById("caseSelect").onchange = refreshStatus;
-  document.getElementById("btnCreateFreeze").onclick = ()=>createAction("freeze");
-  document.getElementById("btnCreateUnfreeze").onclick = ()=>createAction("unfreeze");
-  document.getElementById("btnVerify").onclick = verify;
-  document.getElementById("btnApply").onclick = apply;
-
-  (async function init(){
-    await loadAll();
-    await refreshStatus();
-  })();
+  async function getAction() {
+    const hash = document.getElementById("opsHash").value.trim();
+    show(await call("ops_action_get", { hash }));
+  }
+  async function verifyOps() {
+    const hash = document.getElementById("opsHash").value.trim();
+    show(await call("verify_ops", { hash }));
+  }
 </script>
 </body>
 </html>
