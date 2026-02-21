@@ -22,8 +22,6 @@
   <h1>sa_economy · Freeze Console</h1>
   <div class="hint">RPC: <span id="rpcUrl"></span></div>
 
-<button onclick="pending()">ops_pending_list</button>
-  
   <div class="row">
     <input id="caseId" placeholder="case_id (e.g. case3)" value="case3" />
     <button onclick="statusAll()">status_all</button>
@@ -44,11 +42,7 @@
   const RPC = "https://rpc.evanbei.com/agent/rpc";
   document.getElementById("rpcUrl").textContent = RPC;
 
-  function show(obj) {
-    document.getElementById("out").textContent = JSON.stringify(obj, null, 2);
-  }
-
-async function pending() {
+ async function pending() {
   show(await call("ops_pending_list"));
 }
   
