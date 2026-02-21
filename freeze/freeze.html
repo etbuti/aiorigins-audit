@@ -71,13 +71,21 @@
   }
 
   function pickHashFromPending(p) {
-    const list = Array.isArray(p?.result) ? p.result : (p?.result?.items || []);
-    const first = list && list.length ? list[0] : null;
-    const h = first?.ops_hash;
-    if (h) document.getElementById("opsHash").value = h;
-    return h;
-  }
+  const list = Array.isArray(p?.result) ? p.result : (p?.result?.items || []);
+  if (!list || !list.length) return "";
 
+  // 1) 优先选择 can_apply=true 的
+  const best = list.find(x => x && x.can_apply === true) || list[0];
+
+  // 2) 同步 caseId（点 status/ freeze/unfreeze 更顺手）
+  if (best?.case_id) document.getElementById("caseId").value = best.case_id;
+
+  // 3) 填 hash
+  if (best?.ops_hash) document.getElementById("opsHash").value = best.ops_hash;
+
+  return best?.ops_hash || "";
+}
+  
   async function pendingFillFirst() {
     const p = await call("ops_pending_list");
     show(p);
