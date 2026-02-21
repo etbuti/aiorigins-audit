@@ -5,43 +5,59 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>SA Audit · Freeze Console</title>
   <style>
-    body{font-family:Arial,system-ui;max-width:980px;margin:48px auto;padding:0 16px;}
-    h1{font-size:18px;margin:0 0 12px;}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0;}
-    select{padding:10px 12px;font-size:14px;min-width:340px;}
+    body{font-family:Arial,system-ui;max-width:1000px;margin:48px auto;padding:0 16px;}
+    h1{font-size:18px;margin:0 0 10px;}
+    .muted{opacity:.65;font-size:12px;margin:6px 0 14px;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0;}
+    select,input{padding:10px 12px;font-size:14px;}
+    select{min-width:360px;}
+    input{min-width:520px;}
     button{padding:10px 12px;font-size:14px;cursor:pointer;}
     button[disabled]{opacity:.45;cursor:not-allowed;}
     pre{background:#f6f6f6;padding:12px;border-radius:10px;overflow:auto;white-space:pre-wrap;}
-    .muted{opacity:.65;font-size:12px;margin-top:6px;}
     .k{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
     .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#eee;font-size:12px;margin-left:6px;}
+    .ok{font-weight:700;}
   </style>
 </head>
 <body>
   <h1>SA Audit · Freeze Console <span class="pill">manual override</span></h1>
   <div class="muted">
-    Minimal human intervention interface. Default mode is autonomous; this exists for last-resort circuit-break.
+    This is a minimal human intervention interface. Actions are staged: <span class="k">create → verify quorum → apply</span>.
+    Default mode is autonomous; use this only as a last-resort circuit-break.
   </div>
 
   <div class="row">
     <label class="k">Case</label>
     <select id="caseSelect"></select>
     <button id="btnRefresh">Refresh</button>
-    <button id="btnFreeze">Freeze</button>
-    <button id="btnUnfreeze">Unfreeze</button>
+  </div>
+
+  <div class="row">
+    <button id="btnCreateFreeze">Create Freeze Action</button>
+    <button id="btnCreateUnfreeze">Create Unfreeze Action</button>
+  </div>
+
+  <div class="row">
+    <label class="k">ops_hash</label>
+    <input id="opsHash" class="k" placeholder="(created ops_hash will appear here)"/>
+    <button id="btnVerify">Verify</button>
+    <button id="btnApply" disabled>Apply</button>
   </div>
 
   <div class="row">
     <div class="muted k" id="meta">—</div>
+    <div class="muted k" id="verifyOut">verify: —</div>
   </div>
 
   <h2 style="font-size:14px;margin:18px 0 8px;">Status (selected case)</h2>
-  <pre id="out">—</pre>
+  <pre id="statusOut">—</pre>
 
   <h2 style="font-size:14px;margin:18px 0 8px;">Raw status_all</h2>
-  <pre id="all">—</pre>
+  <pre id="allOut">—</pre>
 
 <script>
+  // RPC endpoint (from cmd/sa/rpcserve.go default path)
   const RPC_URL = "http://rpc.evanbei.com:8787/agent/rpc";
 
   async function rpc(method, params, id=1){
@@ -58,16 +74,17 @@
       (typeof x === "string") ? x : JSON.stringify(x, null, 2);
   }
 
-  function getCaseId(){
-    return document.getElementById("caseSelect").value;
-  }
+  function getCaseId(){ return document.getElementById("caseSelect").value; }
+  function getOpsHash(){ return document.getElementById("opsHash").value.trim(); }
+  function setOpsHash(h){ document.getElementById("opsHash").value = h || ""; }
 
   async function loadAll(){
     const res = await rpc("status_all", {}, 100);
-    setText("all", res?.result ?? res);
+    setText("allOut", res?.result ?? res);
 
     const cases = res?.result?.cases || [];
     const sel = document.getElementById("caseSelect");
+    const current = sel.value;
     sel.innerHTML = "";
     for (const c of cases){
       const opt = document.createElement("option");
@@ -75,54 +92,67 @@
       opt.textContent = `${c.case_id}  (frozen=${c.effective_frozen})`;
       sel.appendChild(opt);
     }
-    if (cases.length === 0){
-      const opt = document.createElement("option");
-      opt.value = "";
-      opt.textContent = "(no cases)";
-      sel.appendChild(opt);
-      document.getElementById("btnFreeze").disabled = true;
-      document.getElementById("btnUnfreeze").disabled = true;
-    }
+    if (current && cases.some(x => x.case_id === current)) sel.value = current;
   }
 
-  async function refreshSelected(){
+  async function refreshStatus(){
     const case_id = getCaseId();
     if (!case_id) return;
-
     const res = await rpc("status", {case_id}, 101);
-    setText("out", res?.result ?? res);
-
-    document.getElementById("btnFreeze").disabled = false;
-    document.getElementById("btnUnfreeze").disabled = false;
-
-    document.getElementById("meta").textContent =
-      `rpc=${RPC_URL} · case_id=${case_id}`;
+    setText("statusOut", res?.result ?? res);
+    document.getElementById("meta").textContent = `rpc=${RPC_URL} · case_id=${case_id}`;
   }
 
-  async function doFreeze(){
+  async function createAction(kind){
     const case_id = getCaseId();
-    const res = await rpc("freeze", {case_id}, 200); // alias exists in agent_rpc.go
-    setText("out", res?.result ?? res);
-    await loadAll();
-    await refreshSelected();
+    const method = (kind === "freeze") ? "ops_freeze" : "ops_unfreeze";
+    const res = await rpc(method, {case_id}, kind === "freeze" ? 200 : 201);
+
+    // Expect { action, case_id, note, ops_hash }
+    const ops_hash = res?.result?.ops_hash || "";
+    setOpsHash(ops_hash);
+    document.getElementById("btnApply").disabled = true;
+    document.getElementById("verifyOut").textContent = "verify: —";
+    setText("statusOut", res?.result ?? res); // show immediate response
   }
 
-  async function doUnfreeze(){
-    const case_id = getCaseId();
-    const res = await rpc("unfreeze", {case_id}, 201);
-    setText("out", res?.result ?? res);
-    await loadAll();
-    await refreshSelected();
+  async function verify(){
+    const hash = getOpsHash();
+    if (!hash) {
+      document.getElementById("verifyOut").textContent = "verify: (missing ops_hash)";
+      return;
+    }
+    const res = await rpc("verify_ops", {hash}, 300);
+    const ok = !!res?.result?.ok;
+    document.getElementById("verifyOut").textContent = `verify: ok=${ok} · hash=${res?.result?.hash || hash}`;
+    document.getElementById("btnApply").disabled = !ok;
+    return ok;
   }
 
-  document.getElementById("btnRefresh").onclick = async ()=>{ await loadAll(); await refreshSelected(); };
-  document.getElementById("btnFreeze").onclick = doFreeze;
-  document.getElementById("btnUnfreeze").onclick = doUnfreeze;
-  document.getElementById("caseSelect").onchange = refreshSelected;
+  async function apply(){
+    const hash = getOpsHash();
+    if (!hash) return;
+
+    // Optional: re-verify before apply
+    const ok = await verify();
+    if (!ok) return;
+
+    const res = await rpc("ops_apply", {hash}, 400);
+    setText("statusOut", res?.result ?? res);
+    await loadAll();
+    await refreshStatus();
+  }
+
+  document.getElementById("btnRefresh").onclick = async ()=>{ await loadAll(); await refreshStatus(); };
+  document.getElementById("caseSelect").onchange = refreshStatus;
+  document.getElementById("btnCreateFreeze").onclick = ()=>createAction("freeze");
+  document.getElementById("btnCreateUnfreeze").onclick = ()=>createAction("unfreeze");
+  document.getElementById("btnVerify").onclick = verify;
+  document.getElementById("btnApply").onclick = apply;
 
   (async function init(){
     await loadAll();
-    await refreshSelected();
+    await refreshStatus();
   })();
 </script>
 </body>
