@@ -183,11 +183,29 @@
     return fallback;
   }
 
-  function renderFromWorker(origin, data){
+function renderFromWorker(origin, data){
     // VisaID
-    const vid = pick(data, ["visa_id","visaId","visa","id"], "");
-    visaIdEl.textContent = vid ? (String(vid).length > 13 ? String(vid).slice(0,12) + "…" : String(vid)) : "—";
+    const vidShort = pick(data, ["visa_id","visaId","visa","id"], "");
+    const vidFull  = pick(data, ["visa_id_full","visaFull","full_id"], vidShort);
 
+    visaIdEl.textContent = vidShort
+        ? (String(vidShort).length > 13 ? String(vidShort).slice(0,12) + "…" : String(vidShort))
+        : "—";
+
+    // ⭐ 保存完整 VisaID（不显示）
+    visaIdEl.dataset.full = vidFull || "";
+
+    // ⭐ 点击复制完整 ID
+    visaIdEl.style.cursor = "pointer";
+    visaIdEl.title = "Click to copy full VisaID";
+    visaIdEl.onclick = async ()=>{
+        try{
+            await navigator.clipboard.writeText(visaIdEl.dataset.full || "");
+            visaIdEl.style.opacity = "0.6";
+            setTimeout(()=>visaIdEl.style.opacity="1", 250);
+        }catch(e){}
+    };
+  
     // counts
     const counts = data && data.counts ? data.counts : null;
     let pass = Number(pick(counts, ["pass"], NaN));
