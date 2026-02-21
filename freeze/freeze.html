@@ -58,7 +58,7 @@
 
 <script>
   // RPC endpoint (from cmd/sa/rpcserve.go default path)
-  const RPC_URL = "http://rpc.evanbei.com:8787/agent/rpc";
+  const RPC_URL = "http://rpc.evanbei.com/agent/rpc";
 
   async function rpc(method, params, id=1){
     const r = await fetch(RPC_URL, {
