@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Audit Target · evanbei.com</title>
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <style>
+    :root{ --bg:#0b0c10; --card:#12141a; --muted:#a7b0c0; --fg:#e9eef7; --line:#242a36; }
+    html,body{ background:var(--bg); color:var(--fg); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin:0; }
+    .wrap{ max-width: 980px; margin: 28px auto; padding: 0 16px; }
+    .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; margin-top:14px; }
+    .h{ font-size: 20px; margin:0; letter-spacing:.2px; }
+    .sub{ color:var(--muted); margin:6px 0 0; font-size: 13px; line-height:1.45; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+    .btn{ background:#1a2030; border:1px solid var(--line); color:var(--fg); border-radius:12px; padding:10px 12px; cursor:pointer; font-size: 13px; text-decoration:none; display:inline-block; }
+    .btn:hover{ filter:brightness(1.08); }
+    .pill{ border:1px solid var(--line); border-radius: 999px; padding:6px 10px; font-size: 12px; color:var(--muted); }
+    code.mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; }
+    .tiny{ color:var(--muted); font-size: 12px; margin-top:10px; line-height:1.55; }
+    ul{ margin:10px 0 0 18px; padding:0; color:var(--muted); font-size:13px; line-height:1.6; }
+    li{ margin:4px 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1 class="h">Audit Target: <span style="opacity:.9">evanbei.com</span></h1>
+      <div class="sub">
+        This page is hosted on <code class="mono">aiorigins.org</code> as an auditor-side target record.<br/>
+        Target files are treated as stable; audit runs externally via Worker to avoid CORS and keep evidence reproducible.
+      </div>
+
+      <div class="row">
+        <span class="pill">Policy: <strong style="color:var(--fg)">AuditVisa v1.0</strong></span>
+        <span class="pill">Target: <code class="mono">https://evanbei.com</code></span>
+        <span class="pill">Auditor: <code class="mono">https://aiorigins.org</code></span>
+      </div>
+
+      <div class="row">
+        <a class="btn" href="https://aiorigins.org/audit/?target=https%3A%2F%2Fevanbei.com">Run Audit →</a>
+        <a class="btn" href="./evanbei.json">View target record (JSON) →</a>
+      </div>
+
+      <div class="tiny">
+        Required paths checked:
+        <ul>
+          <li><code class="mono">/.well-known/node.json</code></li>
+          <li><code class="mono">/portal/portal.json</code></li>
+          <li><code class="mono">/agent/manifest.json</code></li>
+          <li><code class="mono">/agent/protocol.json</code></li>
+          <li><code class="mono">/agent/access-policy.json</code></li>
+          <li><code class="mono">/agent/capability-map.json</code></li>
+        </ul>
+
+        Optional paths:
+        <ul>
+          <li><code class="mono">/agent/registry.json</code></li>
+          <li><code class="mono">/node/checksums.json</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
