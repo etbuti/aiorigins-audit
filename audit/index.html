@@ -42,6 +42,8 @@
       </div>
       <div class="row">
         <button class="btn" id="runBtn">Run audit</button>
+        <button class="btn" id="copyVisa">Copy VisaID</button>
+        <button class="btn" id="downloadJson">Download JSON</button>
         <span class="pill">Policy: <strong>AuditVisa v1.0</strong></span>
       </div>
     </div>
@@ -93,6 +95,12 @@ Issued by: aiorigins.org · Policy: AuditVisa v1.0 · VisaID(full): —
 
 <script>
 (function(){
+  // =========================
+  // AuditVisa v1.0 (UI runner)
+  // - Calls /api/visa?target=... (Worker) to avoid CORS
+  // - Shows VisaID short + keeps VisaID full for copy/download
+  // =========================
+
   // c:true => critical (FAIL rejects visa)
   // c:false => optional (missing => WARN)
   const checks = [
@@ -110,14 +118,19 @@ Issued by: aiorigins.org · Policy: AuditVisa v1.0 · VisaID(full): —
 
   const $ = (id)=>document.getElementById(id);
   const runBtn = $("runBtn");
+  const copyVisaBtn = $("copyVisa");
+  const downloadBtn = $("downloadJson");
   const sameBtn = $("sameBtn");
   const originInput = $("originInput");
   const rows = $("rows");
   const headline = $("headline");
   const summary = $("summary");
   const visaIdEl = $("visaId");
+  const stamp = document.getElementById("printStamp");
 
-  // Default: keep current behavior (same origin of this page)
+  let lastVisaData = null;   // 保存 worker 返回结果（用于下载/复制）
+
+  // Default: same origin of this page (avoid CORS)
   originInput.value = location.origin;
 
   sameBtn.addEventListener("click", ()=>{
@@ -126,6 +139,9 @@ Issued by: aiorigins.org · Policy: AuditVisa v1.0 · VisaID(full): —
 
   runBtn.addEventListener("click", run);
 
+  // =========================
+  // helpers
+  // =========================
   function esc(s){
     return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   }
@@ -165,12 +181,6 @@ Issued by: aiorigins.org · Policy: AuditVisa v1.0 · VisaID(full): —
     }
   }
 
-  function statusToClass(s){
-    if(s === "PASS") return "ok";
-    if(s === "WARN") return "warn";
-    return "fail";
-  }
-
   function normalizeStatus(s){
     s = String(s || "").toUpperCase().trim();
     if(s === "OK" || s === "GRANTED" || s === "ALLOW") return "PASS";
@@ -187,44 +197,53 @@ Issued by: aiorigins.org · Policy: AuditVisa v1.0 · VisaID(full): —
     return fallback;
   }
 
-function renderFromWorker(origin, data){
-    // VisaID
+  // =========================
+  // render worker result
+  // =========================
+  function renderFromWorker(origin, data){
+    lastVisaData = data || null;
+
+    // VisaID short/full (support multiple field names)
     const vidShort = pick(data, ["visa_id","visaId","visa","id"], "");
     const vidFull  = pick(data, ["visa_id_full","visaFull","full_id"], vidShort);
 
     visaIdEl.textContent = vidShort
-        ? (String(vidShort).length > 13 ? String(vidShort).slice(0,12) + "…" : String(vidShort))
-        : "—";
+      ? (String(vidShort).length > 13 ? String(vidShort).slice(0,12) + "…" : String(vidShort))
+      : "—";
 
-    // ⭐ 保存完整 VisaID（不显示）
+    // keep full VisaID for copy/download
     visaIdEl.dataset.full = vidFull || "";
 
-    // ⭐ 点击复制完整 ID
+    // clicking VisaID pill copies full id
     visaIdEl.style.cursor = "pointer";
     visaIdEl.title = "Click to copy full VisaID";
     visaIdEl.onclick = async ()=>{
-        try{
-            await navigator.clipboard.writeText(visaIdEl.dataset.full || "");
-            visaIdEl.style.opacity = "0.6";
-            setTimeout(()=>visaIdEl.style.opacity="1", 250);
-        }catch(e){}
+      const full = visaIdEl.dataset.full || "";
+      if(!full) return;
+      try{
+        await navigator.clipboard.writeText(full);
+        visaIdEl.style.opacity = "0.6";
+        setTimeout(()=>visaIdEl.style.opacity="1", 250);
+      }catch(e){}
     };
 
-const stamp = document.getElementById("printStamp");
-if(stamp){
-  stamp.textContent =
-    "Issued by: aiorigins.org · Policy: AuditVisa v1.0 · VisaID(full): " +
-    (vidFull || "—");
-}
-  
+    // print stamp (for browser printing)
+    if(stamp){
+      const issuer = location.host; // whoever hosts this page
+      stamp.textContent =
+        "Issued by: " + issuer +
+        " · Policy: AuditVisa v1.0 · VisaID(full): " +
+        (vidFull || "—");
+    }
+
     // counts
-    const counts = data && data.counts ? data.counts : null;
+    const counts = (data && data.counts) ? data.counts : null;
     let pass = Number(pick(counts, ["pass"], NaN));
     let warn = Number(pick(counts, ["warn"], NaN));
     let fail = Number(pick(counts, ["fail"], NaN));
     let total = Number(pick(counts, ["checks","total"], NaN));
 
-    // If counts missing, infer from table
+    // evidence table (support multiple field names)
     const table = Array.isArray(data && data.table) ? data.table
                 : (Array.isArray(data && data.results) ? data.results
                 : (Array.isArray(data && data.evidence) ? data.evidence : []));
@@ -239,10 +258,9 @@ if(stamp){
         else fail++;
       }
     }
-
     summary.textContent = `Checks: ${total} · PASS ${pass} · WARN ${warn} · FAIL ${fail}`;
 
-    // verdict
+    // verdict headline
     const verdictRaw = String(pick(data, ["verdict","decision","status"], "")).toUpperCase();
     const verdict = verdictRaw || (fail > 0 ? "REJECTED" : (warn > 0 ? "WARN" : "GRANTED"));
 
@@ -290,23 +308,25 @@ if(stamp){
       return;
     }
 
-    // Fallback: show expected checks with “no table”
+    // fallback: show expected checks
     for(const c of checks){
       addRow("WARN", c.key, c.path, `<div class="tiny"><strong>No evidence table returned</strong></div>`);
     }
   }
 
+  // =========================
+  // call worker endpoint
+  // =========================
   async function runViaWorker(origin){
-    const url = `/api/visa?target=${encodeURIComponent(origin)}`;
+    const endpoint = `/api/visa?target=${encodeURIComponent(origin)}`;
     const started = Date.now();
-    const r = await fetch(url, { method:"GET", cache:"no-store" });
+    const r = await fetch(endpoint, { method:"GET", cache:"no-store" });
     const ms = Date.now() - started;
 
     let txt = "";
     try{ txt = await r.text(); }catch(e){}
 
     if(!r.ok){
-      // try to show any JSON error
       let msg = `HTTP ${r.status}`;
       try{
         const j = JSON.parse(txt);
@@ -315,7 +335,7 @@ if(stamp){
       const err = new Error(msg);
       err.http = r.status;
       err.ms = ms;
-      err.url = url;
+      err.url = endpoint;
       throw err;
     }
 
@@ -325,15 +345,19 @@ if(stamp){
       const err = new Error("Invalid JSON from Worker");
       err.http = r.status;
       err.ms = ms;
-      err.url = url;
+      err.url = endpoint;
       throw err;
     }
   }
 
+  // =========================
+  // run
+  // =========================
   async function run(){
     runBtn.disabled = true;
     rows.innerHTML = "";
     visaIdEl.textContent = "—";
+    visaIdEl.dataset.full = "";
     setHeadline("", "Running…");
 
     const origin = normalizeOrigin(originInput.value);
@@ -351,14 +375,57 @@ if(stamp){
           <div>Endpoint: <code class="mono">/api/visa</code></div>
         </div>
       `;
-
-      // show a single row as evidence
       rows.innerHTML = "";
       addRow("FAIL", "worker", "/api/visa?target=…", evHtml);
     }finally{
       runBtn.disabled = false;
     }
   }
+
+  // =========================
+  // one-time bindings (IMPORTANT)
+  // =========================
+  copyVisaBtn.onclick = async ()=>{
+    if(!lastVisaData) return;
+
+    const full =
+      (visaIdEl.dataset.full || "") ||
+      (lastVisaData.visa_id_full || "") ||
+      (lastVisaData.visa_id || "");
+
+    if(!full) return;
+
+    try{
+      await navigator.clipboard.writeText(full);
+      copyVisaBtn.style.opacity = "0.6";
+      setTimeout(()=>copyVisaBtn.style.opacity="1", 250);
+    }catch(e){}
+  };
+
+  downloadBtn.onclick = ()=>{
+    if(!lastVisaData) return;
+
+    const blob = new Blob([JSON.stringify(lastVisaData, null, 2)], { type:"application/json" });
+    const href = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = href;
+
+    const full =
+      (visaIdEl.dataset.full || "") ||
+      (lastVisaData.visa_id_full || "") ||
+      (lastVisaData.visa_id || "audit");
+
+    const id = String(full).slice(0,16);
+    a.download = `auditvisa_v1.0_${id}.json`;
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(()=>URL.revokeObjectURL(href), 1500);
+  };
+
 })();
 </script>
 </body>
