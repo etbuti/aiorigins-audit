@@ -42,63 +42,67 @@
   const RPC = "https://rpc.evanbei.com/agent/rpc";
   document.getElementById("rpcUrl").textContent = RPC;
 
-function pickHashFromPending(p) {
-  // 支持两种结构：result 是数组 或 包一层
-  const list = Array.isArray(p?.result) ? p.result : (p?.result?.items || []);
-  const first = list && list.length ? list[0] : null;
-  const h = first?.ops_hash;
-  if (h) document.getElementById("opsHash").value = h;
-  return h;
-}
+  function show(obj) {
+    document.getElementById("out").textContent = JSON.stringify(obj, null, 2);
+  }
 
-async function pendingFillFirst() {
-  const p = await call("ops_pending_list");
-  show(p);
-  pickHashFromPending(p);
-}
-
-// 页面打开就跑一次
-pendingFillFirst();  
- async function pending() {
-  show(await call("ops_pending_list"));
-}
-  
-  async function call(method, params = undefined) {
+  async function call(method, params) {
     const payload = { method, id: Date.now() };
     if (params) payload.params = params;
 
-    const res = await fetch(RPC, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const text = await res.text();
-    let data;
-    try { data = JSON.parse(text); } catch { data = { http_status: res.status, raw: text }; }
-
-    if (!res.ok) {
-      // keep both HTTP status + json error
-      data.http_status = res.status;
+    let res, text;
+    try {
+      res = await fetch(RPC, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      text = await res.text();
+    } catch (e) {
+      return { error: "fetch failed", detail: String(e) };
     }
+
+    let data;
+    try { data = JSON.parse(text); }
+    catch { data = { http_status: res.status, raw: text }; }
+
+    if (!res.ok) data.http_status = res.status;
     return data;
   }
 
-  async function statusAll() {
-    show(await call("status_all"));
+  function pickHashFromPending(p) {
+    const list = Array.isArray(p?.result) ? p.result : (p?.result?.items || []);
+    const first = list && list.length ? list[0] : null;
+    const h = first?.ops_hash;
+    if (h) document.getElementById("opsHash").value = h;
+    return h;
   }
+
+  async function pendingFillFirst() {
+    const p = await call("ops_pending_list");
+    show(p);
+    pickHashFromPending(p);
+  }
+
+  // 页面打开就拉一次 pending，并尝试自动填 hash
+  pendingFillFirst();
+
+  // ---- button handlers ----
+  async function statusAll() { show(await call("status_all")); }
+
   async function statusOne() {
     const case_id = document.getElementById("caseId").value.trim();
     show(await call("status", { case_id }));
   }
+
   async function freeze() {
     const case_id = document.getElementById("caseId").value.trim();
     const r = await call("ops_freeze", { case_id });
     show(r);
-    // convenience: auto-fill ops_hash
     const h = r?.result?.ops_hash;
     if (h) document.getElementById("opsHash").value = h;
   }
+
   async function unfreeze() {
     const case_id = document.getElementById("caseId").value.trim();
     const r = await call("ops_unfreeze", { case_id });
@@ -106,10 +110,12 @@ pendingFillFirst();
     const h = r?.result?.ops_hash;
     if (h) document.getElementById("opsHash").value = h;
   }
+
   async function getAction() {
     const hash = document.getElementById("opsHash").value.trim();
     show(await call("ops_action_get", { hash }));
   }
+
   async function verifyOps() {
     const hash = document.getElementById("opsHash").value.trim();
     show(await call("verify_ops", { hash }));
