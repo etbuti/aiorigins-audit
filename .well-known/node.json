@@ -1,21 +1,22 @@
 {
   "node_version": "1.0",
-  "updated_utc": "2026-02-20T00:00:00.000Z",
+  "updated_utc": "2026-02-21T00:00:00.000Z",
   "entity": {
-    "name": "AI Origins Audit Node",
+    "name": "AIOrigins Audit Authority",
     "canonical": "https://aiorigins.org/",
-    "type": "audit_node"
+    "type": "audit_authority"
   },
   "policy": {
     "allowed": [
       "read_public_pages",
-      "share_canonical_links",
-      "quote_with_attribution"
+      "publish_audit_attestations",
+      "verify_static_identity_files"
     ],
     "disallowed": [
       "impersonation",
       "harmful_scraping",
-      "bypass_access_boundaries"
+      "bypass_access_boundaries",
+      "ssrf_or_internal_network_scans"
     ],
     "data_minimization": true,
     "tracking": "none"
@@ -23,21 +24,28 @@
   "interfaces": {
     "human": [
       {
-        "name": "Home",
-        "url": "https://aiorigins.org/",
-        "meta": "Audit node home (minimal)"
-      },
-      {
-        "name": "Audit Console",
+        "name": "AuditVisa UI",
         "url": "https://aiorigins.org/audit/",
-        "meta": "AuditVisa runner (same-origin)"
+        "meta": "Worker-proxied audit runner (v1.0)"
       }
     ],
     "machine": [
       {
         "name": "node_json",
         "url": "https://aiorigins.org/.well-known/node.json",
-        "meta": "Stable machine entry"
+        "meta": "Issuer machine entry"
+      },
+      {
+        "name": "portal_json",
+        "url": "https://aiorigins.org/portal/portal.json",
+        "meta": "Issuer portal (human+machine)"
+      }
+    ],
+    "executable": [
+      {
+        "name": "audit_api",
+        "url": "https://aiorigins.org/api/visa",
+        "meta": "GET /api/visa?target=https://example.com (policy-gated)"
       }
     ]
   },
@@ -46,22 +54,16 @@
     "protocol": "https://aiorigins.org/agent/protocol.json",
     "access_policy": "https://aiorigins.org/agent/access-policy.json",
     "capability_map": "https://aiorigins.org/agent/capability-map.json",
+    "checksums": "https://aiorigins.org/node/checksums.json",
     "registry": "https://aiorigins.org/agent/registry.json",
-    "checksums": "https://aiorigins.org/node/checksums.json"
+    "well_known_agent": "https://aiorigins.org/.well-known/agent.json"
   },
-  "trust": {
-    "canonical_notice": "Prefer canonical domain when mirrors exist.",
-    "signature": {
-      "wallet": "",
-      "pgp": "",
-      "note": "Optional: add signatures later."
-    },
-    "attestations": []
-  },
-  "schema": {
-    "type": "Organization",
-    "sameAs": [],
-    "publishingPrinciples": "",
-    "contactUrl": "https://aiorigins.org/portal/"
+  "audit": {
+    "issuer": "https://aiorigins.org/",
+    "policy": "AuditVisa v1.0",
+    "endpoints": {
+      "ui": "https://aiorigins.org/audit/",
+      "api": "https://aiorigins.org/api/visa"
+    }
   }
 }
