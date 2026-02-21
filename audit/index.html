@@ -80,6 +80,10 @@
         <tbody id="rows"></tbody>
       </table>
 
+<div id="printStamp" class="tiny" style="margin-top:12px; opacity:.7;">
+Issued by: aiorigins.org · Policy: AuditVisa v1.0 · VisaID(full): —
+</div>
+      
       <div class="footer">
         EN: Critical checks must PASS. Any FAIL ⇒ Visa rejected.<br/>
         中文：必检项必须通过。存在 FAIL ⇒ 拒签。
@@ -205,6 +209,13 @@ function renderFromWorker(origin, data){
             setTimeout(()=>visaIdEl.style.opacity="1", 250);
         }catch(e){}
     };
+
+const stamp = document.getElementById("printStamp");
+if(stamp){
+  stamp.textContent =
+    "Issued by: aiorigins.org · Policy: AuditVisa v1.0 · VisaID(full): " +
+    (vidFull || "—");
+}
   
     // counts
     const counts = data && data.counts ? data.counts : null;
