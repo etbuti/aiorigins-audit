@@ -6,9 +6,8 @@
   "audit_runner_api": "https://aiorigins.org/api/visa",
   "policy": "AuditVisa v1.0",
   "notes": [
-    "Target site is treated as stable and not modified for auditing.",
-    "Use worker-proxied audit to avoid CORS and keep evidence reproducible.",
-    "This target record lives on the auditor domain (aiorigins.org)."
+    "Target site treated as stable; do not modify target for auditing.",
+    "Use worker-proxied audit (aiorigins.org) to avoid CORS and keep evidence reproducible."
   ],
   "required_paths": [
     "/.well-known/node.json",
