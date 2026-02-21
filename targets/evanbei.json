@@ -1,0 +1,24 @@
+{
+  "type": "audit_target",
+  "target_origin": "https://evanbei.com",
+  "target_name": "Evan Bei / billund",
+  "audit_runner_ui": "https://aiorigins.org/audit/",
+  "audit_runner_api": "https://aiorigins.org/api/visa",
+  "policy": "AuditVisa v1.0",
+  "notes": [
+    "Target site is treated as stable and not modified for auditing.",
+    "Use worker-proxied audit to avoid CORS and keep evidence reproducible."
+  ],
+  "required_paths": [
+    "/.well-known/node.json",
+    "/portal/portal.json",
+    "/agent/manifest.json",
+    "/agent/protocol.json",
+    "/agent/access-policy.json",
+    "/agent/capability-map.json"
+  ],
+  "optional_paths": [
+    "/agent/registry.json",
+    "/node/checksums.json"
+  ]
+}
