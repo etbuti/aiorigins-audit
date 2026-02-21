@@ -7,7 +7,8 @@
   "policy": "AuditVisa v1.0",
   "notes": [
     "Target site is treated as stable and not modified for auditing.",
-    "Use worker-proxied audit to avoid CORS and keep evidence reproducible."
+    "Use worker-proxied audit to avoid CORS and keep evidence reproducible.",
+    "This target record lives on the auditor domain (aiorigins.org)."
   ],
   "required_paths": [
     "/.well-known/node.json",
@@ -20,5 +21,15 @@
   "optional_paths": [
     "/agent/registry.json",
     "/node/checksums.json"
-  ]
+  ],
+  "suggested_runs": [
+    {
+      "label": "Run audit for evanbei.com",
+      "url": "https://aiorigins.org/audit/?target=https://evanbei.com"
+    }
+  ],
+  "issued_by": {
+    "auditor_origin": "https://aiorigins.org",
+    "role": "auditor_node"
+  }
 }
