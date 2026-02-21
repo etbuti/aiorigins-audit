@@ -1,22 +1,44 @@
 {
-  "portal_version": "1.0",
+  "title": "AIOrigins Audit Authority",
+  "subtitle": "Issuer node for AuditVisa attestations (v1.0)",
+  "tags": ["audit", "issuer", "stable", "machine-first"],
   "canonical": "https://aiorigins.org/",
-  "name": "AI Origins — Audit Portal",
-  "routes": {
-    "audit": "/audit/",
-    "node": "/.well-known/node.json",
-    "agent": "/agent/",
-    "policy": "/policy/"
-  },
-  "contact": {
-    "email": "mailto:toptrust@gmail.com",
-    "note": "For audit coordination and provenance inquiries."
-  },
-  "meta": {
-    "updated_utc": "2026-02-20T00:00:00.000Z",
-    "language": [
-      "en",
-      "zh"
-    ]
-  }
+  "entity_name": "AIOrigins Audit Authority",
+  "entity_type": "audit_authority",
+  "node_version": "1.0",
+  "machine_entry": "https://aiorigins.org/.well-known/node.json",
+  "sections": [
+    {
+      "title": "AuditVisa",
+      "desc": "Worker-proxied audit runner producing VisaID and evidence table.",
+      "span": 12,
+      "items": [
+        {
+          "name": "Audit UI",
+          "url": "https://aiorigins.org/audit/",
+          "label": "Runner",
+          "meta": "Run audits (same-origin UI)"
+        },
+        {
+          "name": "Audit API",
+          "url": "https://aiorigins.org/api/visa",
+          "label": "Endpoint",
+          "meta": "GET /api/visa?target=https://example.com"
+        }
+      ]
+    },
+    {
+      "title": "Published artifacts (examples)",
+      "desc": "Optional human-facing artifacts for subjects.",
+      "span": 12,
+      "items": [
+        {
+          "name": "Subject: evanbei.com",
+          "url": "https://aiorigins.org/evanbei.html",
+          "label": "Artifact",
+          "meta": "Audit artifact page (human-facing)"
+        }
+      ]
+    }
+  ]
 }
