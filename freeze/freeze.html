@@ -70,21 +70,23 @@
     return data;
   }
 
-  function pickHashFromPending(p) {
+ function pickHashFromPending(p) {
   const list = Array.isArray(p?.result) ? p.result : (p?.result?.items || []);
   if (!list || !list.length) return "";
 
-  // 1) 优先选择 can_apply=true 的
-  const best = list.find(x => x && x.can_apply === true) || list[0];
+  const cid = document.getElementById("caseId").value.trim();
 
-  // 2) 同步 caseId（点 status/ freeze/unfreeze 更顺手）
-  if (best?.case_id) document.getElementById("caseId").value = best.case_id;
+  // 1) 先按当前 caseId 精确匹配
+  const hit = list.find(x => x?.case_id === cid);
 
-  // 3) 填 hash
+  // 2) 如果没匹配到，再退化：选 can_apply=true 的；再不行就第一条
+  const best = hit || list.find(x => x?.can_apply === true) || list[0];
+
+  // 3) 只填 hash，不改 caseId
   if (best?.ops_hash) document.getElementById("opsHash").value = best.ops_hash;
 
   return best?.ops_hash || "";
-}
+}  
   
   async function pendingFillFirst() {
     const p = await call("ops_pending_list");
@@ -95,8 +97,7 @@
   // 页面打开就拉一次 pending，并尝试自动填 hash
   pendingFillFirst();
 
-    document.getElementById("caseId").addEventListener("change", async () => {
-  const cid = document.getElementById("caseId").value.trim();
+    document.getElementById("caseId").addEventListener("input", async () => {  const cid = document.getElementById("caseId").value.trim();
   const p = await call("ops_pending_list");
   const list = Array.isArray(p?.result) ? p.result : (p?.result?.items || []);
   const hit = (list || []).find(x => x?.case_id === cid);
