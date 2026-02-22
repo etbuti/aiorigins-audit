@@ -95,7 +95,7 @@
   // 页面打开就拉一次 pending，并尝试自动填 hash
   pendingFillFirst();
 
-  document.getElementById("caseId").addEventListener("change", async () => {
+    document.getElementById("caseId").addEventListener("change", async () => {
   const cid = document.getElementById("caseId").value.trim();
   const p = await call("ops_pending_list");
   const list = Array.isArray(p?.result) ? p.result : (p?.result?.items || []);
