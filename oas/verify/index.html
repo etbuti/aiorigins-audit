@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OAS v0.1 · Verify</title>
+  <meta name="robots" content="index,follow" />
+  <style>
+    :root{ --bg:#0b0c10; --card:#12141a; --fg:#e9eef7; --muted:#a7b0c0; --line:#242a36; }
+    html,body{ background:var(--bg); color:var(--fg); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin:0; }
+    .wrap{ max-width: 920px; margin: 28px auto; padding: 0 16px; }
+    .card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; }
+    h1{ font-size:20px; margin:0 0 8px; }
+    .muted{ color:var(--muted); font-size:13px; line-height:1.45; }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:14px; align-items:center; }
+    input[type=file]{ color:var(--muted); }
+    button{ background:#1b2230; border:1px solid var(--line); color:var(--fg); padding:10px 12px; border-radius:12px; cursor:pointer; }
+    button:hover{ filter:brightness(1.07); }
+    pre{ background:#0f1117; border:1px solid var(--line); border-radius:12px; padding:12px; overflow:auto; }
+    .ok{ color:#35d07f; }
+    .fail{ color:#ff6b6b; }
+    code{ color:#cfe3ff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>OAS v0.1 · Manifest Self-Hash Verification</h1>
+      <div class="muted">
+        Upload <code>manifest.json</code>. This page recomputes the canonical self-hash (SHA-256) and compares it with <code>manifest.anchor.current_hash</code>.
+        No files are uploaded anywhere; verification runs locally in your browser.
+      </div>
+
+      <div class="row">
+        <input id="file" type="file" accept="application/json,.json" />
+        <button id="btn">Verify</button>
+      </div>
+
+      <div id="out" style="margin-top:14px;"></div>
+    </div>
+  </div>
+
+<script>
+function canonicalStringify(obj){
+  // OAS canonical JSON v0.1 minimal: sort keys, compact separators
+  const seen = new WeakSet();
+  function sorter(x){
+    if (x && typeof x === "object"){
+      if (seen.has(x)) throw new Error("circular structure not supported");
+      seen.add(x);
+      if (Array.isArray(x)) return x.map(sorter);
+      const keys = Object.keys(x).sort();
+      const o = {};
+      for (const k of keys) o[k] = sorter(x[k]);
+      return o;
+    }
+    return x;
+  }
+  return JSON.stringify(sorter(obj));
+}
+
+async function sha256Hex(str){
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest("SHA-256", enc.encode(str));
+  const arr = Array.from(new Uint8Array(buf));
+  return arr.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function el(tag, cls, text){
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+
+document.getElementById("btn").addEventListener("click", async () => {
+  const out = document.getElementById("out");
+  out.innerHTML = "";
+  const f = document.getElementById("file").files[0];
+  if (!f){
+    out.appendChild(el("div","fail","Please choose manifest.json"));
+    return;
+  }
+
+  let manifest;
+  try{
+    manifest = JSON.parse(await f.text());
+  } catch(e){
+    out.appendChild(el("div","fail","Invalid JSON: " + e.message));
+    return;
+  }
+
+  const claimed = manifest?.anchor?.current_hash;
+  if (!claimed || typeof claimed !== "string"){
+    out.appendChild(el("div","fail","manifest.anchor.current_hash missing"));
+    return;
+  }
+
+  // compute self-hash with current_hash removed
+  const m2 = JSON.parse(JSON.stringify(manifest));
+  if (m2.anchor && typeof m2.anchor === "object") delete m2.anchor.current_hash;
+
+  try{
+    const canon = canonicalStringify(m2);
+    const computed = await sha256Hex(canon);
+
+    const ok = (computed === claimed);
+    const status = ok ? el("div","ok","OK: self-hash matches") : el("div","fail","FAIL: self-hash mismatch");
+    out.appendChild(status);
+
+    const pre = el("pre");
+    pre.textContent =
+      "computed: " + computed + "\n" +
+      "claimed : " + claimed + "\n";
+    out.appendChild(pre);
+  } catch(e){
+    out.appendChild(el("div","fail","Verification error: " + e.message));
+  }
+});
+</script>
+</body>
+</html>
