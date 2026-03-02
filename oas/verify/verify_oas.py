@@ -54,8 +54,8 @@ def verify_anchor_chain(anchor_log_path: str) -> Tuple[bool, str]:
         return False, "anchor log not found"
 
     with open(anchor_log_path, "r", encoding="utf-8") as f:
-        lines = [ln.strip() for ln in f.readlines() if ln.strip()]
-
+        lines = [ln.strip() for ln in f.readlines() if ln.strip() and not ln.strip().startswith("#")]
+        
     if not lines:
         return False, "anchor log is empty"
 
@@ -84,6 +84,39 @@ def verify_anchor_chain(anchor_log_path: str) -> Tuple[bool, str]:
 
     return True, "anchor chain OK"
 
+def verify_manifest_anchor_presence(manifest_path: str, anchor_log_path: str) -> Tuple[bool, str]:
+    m = load_json(manifest_path)
+    seq = m.get("anchor", {}).get("anchor_sequence", None)
+    cur = m.get("anchor", {}).get("current_hash", "")
+    prev = m.get("anchor", {}).get("previous_hash", "")
+    dom = m.get("target", {}).get("domain", "")
+
+    if not isinstance(seq, int) or not cur or not prev or not dom:
+        return False, "manifest missing anchor_sequence/current_hash/previous_hash/target.domain"
+
+    if not os.path.exists(anchor_log_path):
+        return False, "anchor log not found"
+
+    with open(anchor_log_path, "r", encoding="utf-8") as f:
+        for ln in f:
+            ln = ln.strip()
+            if not ln or ln.startswith("#"):
+                continue
+            parsed = parse_anchor_line(ln)
+            if not parsed:
+                continue
+            s, ts, h, p, d = parsed
+            if s == seq:
+                if h != cur:
+                    return False, f"anchor seq {seq} hash mismatch"
+                if p != prev:
+                    return False, f"anchor seq {seq} prev_hash mismatch"
+                if d != dom:
+                    return False, f"anchor seq {seq} domain mismatch"
+                return True, f"anchor presence OK (seq {seq})"
+
+    return False, f"anchor seq {seq} not found in anchor log"
+    
 def verify_artifacts(manifest_path: str, root_dir: str) -> Tuple[bool, str]:
     m = load_json(manifest_path)
     artifacts = m.get("artifacts", [])
@@ -142,12 +175,18 @@ def main():
             sys.exit(3)
 
     if args.anchor_log:
+        okp, msgp = verify_manifest_anchor_presence(args.manifest, args.anchor_log)
+        if okp:
+            print("[OK] anchor presence:", msgp)
+        else:
+            print("[FAIL] anchor presence:", msgp)
+            sys.exit(4)
+
         ok2, msg = verify_anchor_chain(args.anchor_log)
         if ok2:
             print("[OK] anchor chain:", msg)
         else:
             print("[WARN] anchor chain:", msg)
-
     print("DONE")
 
 if __name__ == "__main__":
