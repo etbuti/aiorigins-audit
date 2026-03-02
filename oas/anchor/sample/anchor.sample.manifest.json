@@ -1,0 +1,18 @@
+{
+  "type": "oas:anchor-sample-manifest",
+  "oas": { "standard": "Origin Audit Standard", "version": "0.1", "profile": "anchor-sample" },
+  "generated_at": "2026-03-02T13:45:28Z",
+  "source": {
+    "host": "wg-core",
+    "path": "/var/lib/origin-oas/anchors/anchor.log",
+    "window": "last up to 100 lines"
+  },
+  "sample": {
+    "path": "anchor.sample.log",
+    "lines": 43,
+    "bytes": 7199,
+    "sha256": "bbdd528626fb64e08bb2b5f5d5540f2993277ebbf397d09b88e62a9561d06c2d",
+    "format": "seq ts hash prev_hash domain",
+    "comments": "Lines beginning with # are allowed and should be ignored by parsers."
+  }
+}
