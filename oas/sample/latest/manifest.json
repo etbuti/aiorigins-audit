@@ -15,10 +15,5 @@
     "previous_hash": "053a0a6b6bc007ed11ff5e97b7c50d9f8fe85380c916a29bdbe5efe3d81e3e73",
     "current_hash": "40507d46561ec5c6a93708f7332a51874c3532eff3acde7287135ecacb141f9e"
   },
-      "oas": {
-    "standard": "Origin Audit Standard",
-    "version": "0.1",
-    "profile": "sample-minimal"
-  },
   "signatures": []
 }
