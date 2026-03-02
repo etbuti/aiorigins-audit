@@ -1,0 +1,19 @@
+OAS v0.1 Public Sample & Verification
+
+Public sample report (target: iana.org)
+- Latest sample manifest: /oas/sample/latest/manifest.json
+- Fixed sample manifest: /oas/sample/AIR-2026-03-02T11:45:49Z/manifest.json
+
+What this sample is (and is not)
+- It is a provenance-style integrity snapshot format demonstration (OAS v0.1).
+- It is NOT a security rating and does not claim vulnerability findings.
+
+Verify in browser (no upload)
+- Open: /oas/verify/
+- Upload manifest.json → the verifier recomputes the canonical self-hash and compares it with manifest.anchor.current_hash.
+
+Verify offline (CLI)
+- Download the sample package and run:
+  python3 verify_oas.py --manifest manifest.json
+- If an anchor log is provided, you can also run:
+  python3 verify_oas.py --manifest manifest.json --anchor-log anchor.log
