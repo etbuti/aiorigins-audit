@@ -72,7 +72,6 @@ def verify_anchor_chain(anchor_log_path: str) -> Tuple[bool, str]:
             return False, f"sequence break at line {i+1}: got {seq}, expected {prev_seq+1}"
 
         if prev_hash is None:
-            # genesis: prev should be 64 zeros (recommended) but allow anything if you decide later
             prev_hash = h
             prev_seq = seq
             continue
@@ -85,9 +84,39 @@ def verify_anchor_chain(anchor_log_path: str) -> Tuple[bool, str]:
 
     return True, "anchor chain OK"
 
+def verify_artifacts(manifest_path: str, root_dir: str) -> Tuple[bool, str]:
+    m = load_json(manifest_path)
+    artifacts = m.get("artifacts", [])
+    if not artifacts:
+        return True, "no artifacts listed (skip)"
+
+    for i, a in enumerate(artifacts):
+        rel = a.get("path")
+        claimed_hash = a.get("sha256")
+        claimed_bytes = a.get("bytes")
+        if not rel or not claimed_hash:
+            return False, f"artifact[{i}] missing path/sha256"
+
+        p = os.path.join(root_dir, rel)
+        if not os.path.exists(p):
+            return False, f"artifact[{i}] not found: {rel}"
+
+        with open(p, "rb") as f:
+            data = f.read()
+
+        h = sha256_hex(data)
+        if h != claimed_hash:
+            return False, f"artifact[{i}] sha256 mismatch: {rel}"
+
+        if isinstance(claimed_bytes, int) and len(data) != claimed_bytes:
+            return False, f"artifact[{i}] bytes mismatch: {rel} (got {len(data)} expected {claimed_bytes})"
+
+    return True, "artifacts OK"
+
 def main():
-    p = argparse.ArgumentParser(description="OAS v0.1 verifier (self-hash + optional chain checks)")
+    p = argparse.ArgumentParser(description="OAS v0.1 verifier (self-hash + optional artifact/chain checks)")
     p.add_argument("--manifest", required=True, help="Path to manifest.json")
+    p.add_argument("--root", default="", help="Optional report root dir to verify artifacts (e.g. '.' where artifacts/ lives)")
     p.add_argument("--anchor-log", default="", help="Optional path to anchor.log (seq ts hash prev domain)")
     args = p.parse_args()
 
@@ -104,13 +133,20 @@ def main():
     print("[OK] manifest self-hash")
     print("  hash:", computed)
 
+    if args.root:
+        ok3, msg3 = verify_artifacts(args.manifest, args.root)
+        if ok3:
+            print("[OK] artifacts:", msg3)
+        else:
+            print("[FAIL] artifacts:", msg3)
+            sys.exit(3)
+
     if args.anchor_log:
         ok2, msg = verify_anchor_chain(args.anchor_log)
         if ok2:
             print("[OK] anchor chain:", msg)
         else:
             print("[WARN] anchor chain:", msg)
-            # not hard-fail because you may not publish anchor log publicly yet
 
     print("DONE")
 
