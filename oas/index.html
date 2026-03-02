@@ -1,19 +1,75 @@
-OAS v0.1 Public Sample & Verification
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Origin Audit Standard · OAS v0.1</title>
+  <meta name="robots" content="index,follow" />
+  <style>
+    :root{ --bg:#0b0c10; --card:#12141a; --fg:#e9eef7; --muted:#a7b0c0; --line:#242a36; }
+    html,body{ background:var(--bg); color:var(--fg); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin:0; }
+    .wrap{ max-width: 980px; margin: 28px auto; padding: 0 16px; }
+    .card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; margin-bottom:14px; }
+    h1{ font-size:22px; margin:0 0 6px; }
+    h2{ font-size:16px; margin:14px 0 8px; }
+    .muted{ color:var(--muted); font-size:13px; line-height:1.55; }
+    a{ color:#cfe3ff; text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+    code, pre{ background:#0f1117; border:1px solid var(--line); border-radius:12px; }
+    code{ padding:2px 6px; }
+    pre{ padding:12px; overflow:auto; }
+    ul{ margin:8px 0 0 20px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Origin Audit Standard (OAS) · v0.1</h1>
+      <div class="muted">
+        OAS is a provenance-style integrity snapshot format designed for repeatability and third-party verification.
+        It is <b>not</b> a security rating and does not claim vulnerability findings.
+      </div>
+    </div>
 
-Public sample report (target: iana.org)
-- Latest sample manifest: /oas/sample/latest/manifest.json
-- Fixed sample manifest: /oas/sample/AIR-2026-03-02T11:45:49Z/manifest.json
+    <div class="card">
+      <h2>Public sample report (target: iana.org)</h2>
+      <ul>
+        <li><a href="/oas/sample/latest/manifest.json">Latest sample manifest</a> <span class="muted">(/oas/sample/latest/manifest.json)</span></li>
+        <li><a href="/oas/sample/AIR-2026-03-02T11:45:49Z/manifest.json">Fixed sample manifest</a> <span class="muted">(/oas/sample/AIR-2026-03-02T11:45:49Z/manifest.json)</span></li>
+      </ul>
+      <div class="muted" style="margin-top:10px;">
+        The sample demonstrates: canonical self-hash manifest and a chain-ready anchor reference (internal). Artifacts are minimal in test mode.
+      </div>
+    </div>
 
-What this sample is (and is not)
-- It is a provenance-style integrity snapshot format demonstration (OAS v0.1).
-- It is NOT a security rating and does not claim vulnerability findings.
+    <div class="card">
+      <h2>Verify in browser (no upload)</h2>
+      <div class="muted">
+        Open <a href="/oas/verify/">/oas/verify/</a>, then upload <code>manifest.json</code>.
+        Verification runs locally in your browser: it recomputes the canonical self-hash and compares it with <code>manifest.anchor.current_hash</code>.
+      </div>
+    </div>
 
-Verify in browser (no upload)
-- Open: /oas/verify/
-- Upload manifest.json → the verifier recomputes the canonical self-hash and compares it with manifest.anchor.current_hash.
+    <div class="card">
+      <h2>Verify offline (CLI)</h2>
+      <div class="muted">Download the sample package and run:</div>
+      <pre>python3 verify_oas.py --manifest manifest.json</pre>
+      <div class="muted">
+        If an anchor log is provided, you can also run:
+      </div>
+      <pre>python3 verify_oas.py --manifest manifest.json --anchor-log anchor.log</pre>
+    </div>
 
-Verify offline (CLI)
-- Download the sample package and run:
-  python3 verify_oas.py --manifest manifest.json
-- If an anchor log is provided, you can also run:
-  python3 verify_oas.py --manifest manifest.json --anchor-log anchor.log
+    <div class="card">
+      <h2>中文说明</h2>
+      <div class="muted">
+        OAS 是一种“出证式”的可复算快照格式（强调可重复、可验证、可第三方复验），不是安全评分，也不宣称漏洞发现结论。
+        <br><br>
+        样例（iana.org）：<code>/oas/sample/latest/manifest.json</code>
+        <br>
+        网页验证：<code>/oas/verify/</code>（浏览器本地计算，不上传）
+      </div>
+    </div>
+  </div>
+</body>
+</html>
