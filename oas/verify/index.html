@@ -31,12 +31,21 @@
         No files are uploaded anywhere; verification runs locally in your browser.
       </div>
 
-      <div class="row">
-        <input id="file" type="file" accept="application/json,.json" />
-        <button id="btn">Verify</button>
-      </div>
+    <div class="row">
+  <input id="file" type="file" accept="application/json,.json" />
+  <button id="btn">Verify</button>
+</div>
 
-      <div id="out" style="margin-top:14px;"></div>
+<div class="row" style="margin-top:10px;">
+  <a href="/oas/verify/verify_oas.py" download>
+    <button type="button">Download CLI (verify_oas.py)</button>
+  </a>
+  <a href="/oas/verify/README.txt" target="_blank">
+    <button type="button">Verification README</button>
+  </a>
+</div>
+
+<div id="out" style="margin-top:14px;"></div>  
     </div>
   </div>
 
