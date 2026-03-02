@@ -117,6 +117,40 @@ def verify_manifest_anchor_presence(manifest_path: str, anchor_log_path: str) ->
 
     return False, f"anchor seq {seq} not found in anchor log"
     
+def verify_anchor_sample_log(anchor_log_path: str, sample_manifest_path: str) -> Tuple[bool, str]:
+    if not os.path.exists(anchor_log_path):
+        return False, "anchor log not found"
+    if not os.path.exists(sample_manifest_path):
+        return False, "anchor sample manifest not found"
+
+    sm = load_json(sample_manifest_path)
+    want = sm.get("sample", {}).get("sha256", "")
+    want_bytes = sm.get("sample", {}).get("bytes", None)
+    want_lines = sm.get("sample", {}).get("lines", None)
+
+    if not want:
+        return False, "sample manifest missing sample.sha256"
+
+    with open(anchor_log_path, "rb") as f:
+        data = f.read()
+    got = sha256_hex(data)
+
+    if got != want:
+        return False, "anchor.sample.log sha256 mismatch"
+
+    # optional checks
+    if isinstance(want_bytes, int) and len(data) != want_bytes:
+        return False, f"anchor.sample.log bytes mismatch (got {len(data)} expected {want_bytes})"
+
+    if isinstance(want_lines, int):
+        # count non-empty lines excluding comments
+        text = data.decode("utf-8", errors="replace")
+        lines = [ln for ln in text.splitlines() if ln.strip() and not ln.strip().startswith("#")]
+        if len(lines) != want_lines:
+            return False, f"anchor.sample.log lines mismatch (got {len(lines)} expected {want_lines})"
+
+    return True, "anchor sample log OK"
+    
 def verify_artifacts(manifest_path: str, root_dir: str) -> Tuple[bool, str]:
     m = load_json(manifest_path)
     artifacts = m.get("artifacts", [])
@@ -151,6 +185,8 @@ def main():
     p.add_argument("--manifest", required=True, help="Path to manifest.json")
     p.add_argument("--root", default="", help="Optional report root dir to verify artifacts (e.g. '.' where artifacts/ lives)")
     p.add_argument("--anchor-log", default="", help="Optional path to anchor.log (seq ts hash prev domain)")
+    p.add_argument("--anchor-sample-manifest", default="",
+                   help="Optional anchor sample manifest json to verify anchor log sha256/bytes/lines")
     args = p.parse_args()
 
     ok, computed, claimed_or_err = verify_manifest_self_hash(args.manifest)
@@ -175,6 +211,14 @@ def main():
             sys.exit(3)
 
     if args.anchor_log:
+        if args.anchor_sample_manifest:
+            okS, msgS = verify_anchor_sample_log(args.anchor_log, args.anchor_sample_manifest)
+            if okS:
+                print("[OK] anchor sample:", msgS)
+            else:
+                print("[FAIL] anchor sample:", msgS)
+                sys.exit(5)
+
         okp, msgp = verify_manifest_anchor_presence(args.manifest, args.anchor_log)
         if okp:
             print("[OK] anchor presence:", msgp)
@@ -187,7 +231,7 @@ def main():
             print("[OK] anchor chain:", msg)
         else:
             print("[WARN] anchor chain:", msg)
-    print("DONE")
 
+    print("DONE")
 if __name__ == "__main__":
     main()
