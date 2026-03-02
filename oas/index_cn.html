@@ -1,0 +1,19 @@
+OAS v0.1 公开样例与验证
+
+公开样例报告（目标：iana.org）
+- 最新样例：/oas/sample/latest/manifest.json
+- 固定样例：/oas/sample/AIR-2026-03-02T11:45:49Z/manifest.json
+
+样例的含义
+- 这是 OAS v0.1 的“结构与验证流程”演示：可复算、自哈希、可扩展的时间锚设计。
+- 这不是安全评分，也不宣称漏洞发现结论。
+
+网页验证（不上传文件）
+- 打开：/oas/verify/
+- 上传 manifest.json → 浏览器本地复算 canonical self-hash，并与 manifest.anchor.current_hash 对比。
+
+离线验证（命令行）
+- 下载样例包后执行：
+  python3 verify_oas.py --manifest manifest.json
+- 如随包提供 anchor.log，可进一步执行：
+  python3 verify_oas.py --manifest manifest.json --anchor-log anchor.log
