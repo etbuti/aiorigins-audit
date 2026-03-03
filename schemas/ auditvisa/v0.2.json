@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aiorigins.org/schemas/auditvisa/v0.2.json",
+  "title": "AuditVisa Package",
+  "type": "object",
+  "required": [
+    "schema",
+    "kind",
+    "version",
+    "visa_id",
+    "status",
+    "summary",
+    "header",
+    "target",
+    "policy",
+    "checks",
+    "evidence",
+    "artifacts",
+    "signatures",
+    "timestamps"
+  ],
+  "properties": {
+    "schema": { "type": "string", "format": "uri" },
+    "kind": { "const": "AuditVisa" },
+    "version": { "type": "string" },
+    "visa_id": {
+      "type": "string",
+      "pattern": "^AV-\\d{8}-[A-Z0-9]{2,10}-[A-F0-9]{6}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "WARN", "FAIL"]
+    },
+    "summary": { "type": "object" },
+    "header": { "type": "object" },
+    "target": { "type": "object" },
+    "policy": { "type": "object" },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check_id", "status"],
+        "properties": {
+          "check_id": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["PASS", "WARN", "FAIL", "SKIP"]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "low", "medium", "high", "critical"]
+          }
+        }
+      }
+    },
+    "evidence": { "type": "array" },
+    "artifacts": { "type": "array" },
+    "signatures": { "type": "object" },
+    "timestamps": {
+      "type": "object",
+      "required": ["issued_at"],
+      "properties": {
+        "issued_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}
