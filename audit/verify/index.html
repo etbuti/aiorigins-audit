@@ -133,9 +133,20 @@ async function runVerify(obj){
   const parsed = parseVisaId(visa_id);
   if (!parsed.ok) throw new Error(parsed.reason);
 
-  const canon = stableStringify(obj);
-  const h = await sha256HexUpper(canon);
-  const runhash6 = h.slice(0,6);
+// Reconstruct the exact "to-be-signed" form used by the runner.
+// Runner computed visa_id/hash/signature BEFORE writing issuer.sig and package_self_hash into the JSON.
+const signingObj = JSON.parse(JSON.stringify(obj));
+if (!signingObj.signatures) signingObj.signatures = {};
+if (!signingObj.signatures.issuer) signingObj.signatures.issuer = {};
+signingObj.signatures.issuer.sig = null;
+
+// Fields that were added AFTER the signed bytes were produced:
+delete signingObj.signatures.package_self_hash;
+delete signingObj.signatures.multi_node_signatures;
+delete signingObj.signatures.third_party_verifications;
+
+const canon = stableStringify(signingObj);
+const h = await sha256HexUpper(canon);  const runhash6 = h.slice(0,6);
   const okHash = (runhash6 === parsed.runhash);
 
   const issuer = obj?.signatures?.issuer;
