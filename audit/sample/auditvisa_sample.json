@@ -1,0 +1,245 @@
+{
+  "schema": "https://aiorigins.org/schemas/auditvisa/v0.2.json",
+  "kind": "AuditVisa",
+  "version": "0.2",
+  "visa_id": "AV-2026-0303-EXAMPLE-0001",
+  "status": "FAIL",
+  "summary": {
+    "checks_total": 8,
+    "pass": 3,
+    "warn": 2,
+    "fail": 3,
+    "notes": "Sample package (redacted). Values are illustrative."
+  },
+
+  "header": {
+    "issuer": {
+      "name": "aiorigins.org",
+      "product": "AuditVisa",
+      "policy": "AuditVisa v1.0",
+      "issuer_node": "https://aiorigins.org/",
+      "runner": {
+        "type": "worker-proxied",
+        "endpoint": "/api/visa?target=…",
+        "runtime": "cf-worker"
+      }
+    },
+    "provenance": {
+      "origin_authority": "https://aiorigins.org/",
+      "human_override_priority": true,
+      "append_only": true
+    },
+    "disclaimer": [
+      "Automated domain snapshot at time of run.",
+      "Not a consulting service. No warranty beyond delivered package integrity."
+    ]
+  },
+
+  "target": {
+    "input": "example.com",
+    "normalized": "https://example.com/",
+    "scope": {
+      "same_origin": true,
+      "paths_sampled": [
+        "/",
+        "/.well-known/",
+        "/robots.txt"
+      ]
+    }
+  },
+
+  "policy": {
+    "allow": {
+      "protocols": ["https:"],
+      "hosts": ["*"]
+    },
+    "deny": {
+      "protocols": ["http:", "file:", "data:"],
+      "hosts": ["localhost", "127.0.0.1", "::1", "*.local"]
+    },
+    "notes": "If blocked by policy (host/protocol not allowed), status will be FAIL with evidence."
+  },
+
+  "checks": [
+    {
+      "check_id": "worker",
+      "name": "Runner execution",
+      "status": "FAIL",
+      "severity": "high",
+      "path": "/api/visa?target=…",
+      "evidence_ref": ["ev_0001"],
+      "message": "Target blocked by policy (host/protocol not allowed)"
+    },
+    {
+      "check_id": "https",
+      "name": "HTTPS reachable",
+      "status": "PASS",
+      "severity": "high",
+      "path": "https://example.com/",
+      "evidence_ref": ["ev_0002"]
+    },
+    {
+      "check_id": "headers",
+      "name": "Security headers (baseline)",
+      "status": "WARN",
+      "severity": "medium",
+      "path": "https://example.com/",
+      "evidence_ref": ["ev_0003"],
+      "message": "Some recommended headers missing"
+    },
+    {
+      "check_id": "well_known",
+      "name": ".well-known presence",
+      "status": "PASS",
+      "severity": "low",
+      "path": "https://example.com/.well-known/",
+      "evidence_ref": ["ev_0004"]
+    },
+    {
+      "check_id": "robots",
+      "name": "robots.txt reachable",
+      "status": "PASS",
+      "severity": "low",
+      "path": "https://example.com/robots.txt",
+      "evidence_ref": ["ev_0005"]
+    },
+    {
+      "check_id": "dnssec_hint",
+      "name": "DNSSEC hint (informational)",
+      "status": "WARN",
+      "severity": "info",
+      "path": "dns:example.com",
+      "evidence_ref": ["ev_0006"]
+    },
+    {
+      "check_id": "content_hash",
+      "name": "Content hash capture",
+      "status": "FAIL",
+      "severity": "medium",
+      "path": "https://example.com/",
+      "evidence_ref": ["ev_0007"],
+      "message": "Content capture incomplete in sample mode"
+    },
+    {
+      "check_id": "time_anchor",
+      "name": "Time anchor (optional)",
+      "status": "FAIL",
+      "severity": "info",
+      "path": "anchor:pending",
+      "evidence_ref": ["ev_0008"],
+      "message": "Not enabled in v0.2 sample"
+    }
+  ],
+
+  "evidence": [
+    {
+      "evidence_id": "ev_0001",
+      "type": "policy_block",
+      "ts": "2026-03-03T06:12:11Z",
+      "data": {
+        "reason": "host/protocol not allowed",
+        "blocked_target": "https://example.com/"
+      }
+    },
+    {
+      "evidence_id": "ev_0002",
+      "type": "http_probe",
+      "ts": "2026-03-03T06:12:12Z",
+      "data": {
+        "method": "GET",
+        "status": 200,
+        "final_url": "https://example.com/",
+        "latency_ms": 182
+      }
+    },
+    {
+      "evidence_id": "ev_0003",
+      "type": "headers",
+      "ts": "2026-03-03T06:12:12Z",
+      "data": {
+        "present": ["content-type", "cache-control"],
+        "missing_recommended": ["content-security-policy", "strict-transport-security"]
+      }
+    },
+    {
+      "evidence_id": "ev_0004",
+      "type": "http_probe",
+      "ts": "2026-03-03T06:12:13Z",
+      "data": {
+        "method": "GET",
+        "status": 200,
+        "final_url": "https://example.com/.well-known/"
+      }
+    },
+    {
+      "evidence_id": "ev_0005",
+      "type": "http_probe",
+      "ts": "2026-03-03T06:12:13Z",
+      "data": {
+        "method": "GET",
+        "status": 200,
+        "final_url": "https://example.com/robots.txt"
+      }
+    },
+    {
+      "evidence_id": "ev_0006",
+      "type": "dns_observation",
+      "ts": "2026-03-03T06:12:14Z",
+      "data": {
+        "record_types_seen": ["A", "AAAA", "NS", "TXT"],
+        "dnskey_checked": true
+      }
+    },
+    {
+      "evidence_id": "ev_0007",
+      "type": "hash_capture",
+      "ts": "2026-03-03T06:12:14Z",
+      "data": {
+        "algo": "sha256",
+        "value": "REDACTED_OR_EXAMPLE_HASH==",
+        "note": "Sample mode may omit full body capture"
+      }
+    },
+    {
+      "evidence_id": "ev_0008",
+      "type": "time_anchor",
+      "ts": "2026-03-03T06:12:15Z",
+      "data": {
+        "method": "none",
+        "anchor_ref": null
+      }
+    }
+  ],
+
+  "artifacts": [
+    {
+      "artifact_id": "pkg_json",
+      "name": "auditvisa_package.json",
+      "mime": "application/json",
+      "sha256": "EXAMPLE_SHA256_OF_THIS_JSON",
+      "size_bytes": 4096
+    }
+  ],
+
+  "signatures": {
+    "package_self_hash": {
+      "algo": "sha256",
+      "value": "EXAMPLE_SHA256_OF_CANONICAL_JSON"
+    },
+    "issuer_signature": null,
+    "multi_node_signatures": [],
+    "third_party_verifications": []
+  },
+
+  "timestamps": {
+    "issued_at": "2026-03-03T06:12:16Z",
+    "started_at": "2026-03-03T06:12:10Z",
+    "finished_at": "2026-03-03T06:12:16Z"
+  },
+
+  "links": {
+    "report": "https://aiorigins.org/audit/visa/AV-2026-0303-EXAMPLE-0001/",
+    "download_json": "https://aiorigins.org/audit/visa/AV-2026-0303-EXAMPLE-0001/package.json",
+    "policy": "https://aiorigins.org/audit/policy/auditvisa-v1.0"
+  }
+}
