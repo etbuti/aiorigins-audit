@@ -145,8 +145,6 @@ delete signingObj.signatures.package_self_hash;
 delete signingObj.signatures.multi_node_signatures;
 delete signingObj.signatures.third_party_verifications;
 
-const canon = stableStringify(signingObj);
-const h = await sha256HexUpper(canon);  const runhash6 = h.slice(0,6);
   const okHash = (runhash6 === parsed.runhash);
 
   const issuer = obj?.signatures?.issuer;
