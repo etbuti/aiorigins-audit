@@ -83,6 +83,24 @@ function stableStringify(value){
   throw new Error("Unsupported type in JSON");
 }
 
+function sortKeysDeep(v){
+  if (v === null) return null;
+  if (Array.isArray(v)) return v.map(sortKeysDeep);
+  if (typeof v === "object"){
+    const out = {};
+    for (const k of Object.keys(v).sort()){
+      out[k] = sortKeysDeep(v[k]);
+    }
+    return out;
+  }
+  return v;
+}
+
+function canonPyLike(obj){
+  // Mimic python json.dumps(sort_keys=True, separators=(",",":"), ensure_ascii=False)
+  // JS JSON.stringify already uses UTF-8 and no extra spaces by default.
+  return JSON.stringify(sortKeysDeep(obj));
+}  
 async function sha256HexUpper(str){
   const enc = new TextEncoder();
   const buf = enc.encode(str);
@@ -146,8 +164,8 @@ async function runVerify(obj){
   delete signingObj.signatures.multi_node_signatures;
   delete signingObj.signatures.third_party_verifications;
 
-  const canon = stableStringify(signingObj);
-
+  const canon = canonPyLike(signingObj);
+  
   // 2) VisaID runhash check
   const h = await sha256HexUpper(canon);
   const runhash6 = h.slice(0,6);
