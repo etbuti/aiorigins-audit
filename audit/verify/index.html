@@ -133,20 +133,27 @@ async function runVerify(obj){
   const parsed = parseVisaId(visa_id);
   if (!parsed.ok) throw new Error(parsed.reason);
 
-// Reconstruct the exact "to-be-signed" form used by the runner.
-// Runner computed visa_id/hash/signature BEFORE writing issuer.sig and package_self_hash into the JSON.
-const signingObj = JSON.parse(JSON.stringify(obj));
-if (!signingObj.signatures) signingObj.signatures = {};
-if (!signingObj.signatures.issuer) signingObj.signatures.issuer = {};
-signingObj.signatures.issuer.sig = null;
+  // 1) Build "signing payload" (the exact bytes the issuer signed)
+  const signingObj = JSON.parse(JSON.stringify(obj));
+  if (!signingObj.signatures) signingObj.signatures = {};
+  if (!signingObj.signatures.issuer) signingObj.signatures.issuer = {};
 
-// Fields that were added AFTER the signed bytes were produced:
-delete signingObj.signatures.package_self_hash;
-delete signingObj.signatures.multi_node_signatures;
-delete signingObj.signatures.third_party_verifications;
+  // signature field must be null during hashing/signing
+  signingObj.signatures.issuer.sig = null;
 
+  // fields that are appended after signing must be absent
+  delete signingObj.signatures.package_self_hash;
+  delete signingObj.signatures.multi_node_signatures;
+  delete signingObj.signatures.third_party_verifications;
+
+  const canon = stableStringify(signingObj);
+
+  // 2) VisaID runhash check
+  const h = await sha256HexUpper(canon);
+  const runhash6 = h.slice(0,6);
   const okHash = (runhash6 === parsed.runhash);
 
+  // 3) Signature verify
   const issuer = obj?.signatures?.issuer;
   if (!issuer?.pub || !issuer?.sig) throw new Error("Missing signatures.issuer.pub or signatures.issuer.sig");
   const pubUrl = issuer.pub;
@@ -169,7 +176,7 @@ delete signingObj.signatures.third_party_verifications;
     ok: okHash && okSig
   };
 }
-
+  
 async function readSelectedFile(){
   const f = $("file").files?.[0];
   if (!f) throw new Error("No file selected");
