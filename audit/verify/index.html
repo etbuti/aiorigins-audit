@@ -62,7 +62,8 @@ a:hover{ border-bottom-color:var(--muted); }
 </div>
 
 <script>
-const $ = (id)=>document.getElementById(id);
+  const BUILD_ID = "verify-2026-03-03-1055Z";
+  const $ = (id)=>document.getElementById(id);
 
 function stableStringify(value){
   // JCS-like deterministic JSON: sorted keys, no whitespace, UTF-8.
@@ -184,14 +185,15 @@ async function runVerify(obj){
   const okSig = await verifyEd25519(pubPem, canon, issuer.sig);
 
   return {
-    visa_id,
-    computed_sha256: h,
-    computed_runhash6: runhash6,
-    expected_runhash6: parsed.runhash,
-    ok_hash: okHash,
-    pub: pubUrl,
-    ok_signature: okSig,
-    ok: okHash && okSig
+  build_id: BUILD_ID,
+  visa_id,
+  computed_sha256: h,
+  computed_runhash6: runhash6,
+  expected_runhash6: parsed.runhash,
+  ok_hash: okHash,
+  pub: pubUrl,
+  ok_signature: okSig,
+  ok: okHash && okSig
   };
 }
   
