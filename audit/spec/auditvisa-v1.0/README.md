@@ -86,11 +86,7 @@ The following diagram shows the relationship between:
 - Trust network expansion
 
 ```mermaid
-
-  %% =========================
-  %% AuditVisa Core + Trust Network + Agent Economy
-  %% =========================
-
+flowchart TB
   subgraph EXT[Trust Network Expansion (Deferred / Commercial Activation)]
     MN[Multi-node Signatures<br/>E1]:::ext
     TP[Third-party Verification<br/>E2]:::ext
@@ -132,7 +128,6 @@ The following diagram shows the relationship between:
     ECO[Agent Economy / Node Ecosystem]:::world
   end
 
-  %% pipeline wiring
   TM --> RUN
   ST --> RUN
   RUN --> WK
@@ -141,33 +136,26 @@ The following diagram shows the relationship between:
   IS --> DEL
   PK --> IS
   VID --> PKG
-  GOV --> CORE
 
-  %% delivery to consumers
   DEL --> CUS
   CUS --> VER
 
-  %% verifiers use bridge
   VER --> RV
   RV --> DOC
   RV --> API
 
-  %% divergence detection leads to Bridge-of-Bridge
   VER -. divergence possible .-> CC
   CC --> AD
   AD --> TOOL
 
-  %% expansion attaches to core (optional)
   EXT -. attaches later .-> CORE
   MN -.-> PKG
   TP -.-> PKG
   TA -.-> PKG
 
-  %% targets
   WORLD --> TGT
   TGT --> WK
 
-  %% economy/ecosystem
   CUS --> ECO
   ECO -. future trust linking .-> EXT
 
