@@ -1,6 +1,6 @@
 Architecture Map
 
-AuditVisa Core Architecture v1.0
+# AuditVisa Core Architecture v1.0
 
                          ┌──────────────────────────┐
                          │        Internet          │
@@ -76,7 +76,17 @@ AuditVisa Core Architecture v1.0
 
 
 
-flowchart TB
+## Architecture Diagramflowchart TB
+
+The following diagram shows the relationship between:
+
+- Core issuance layer
+- Bridge and Bridge-of-Bridge governance
+- Agent pipeline
+- Trust network expansion
+
+```mermaid
+
   %% =========================
   %% AuditVisa Core + Trust Network + Agent Economy
   %% =========================
