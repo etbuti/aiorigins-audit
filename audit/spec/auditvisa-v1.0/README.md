@@ -87,55 +87,58 @@ The following diagram shows the relationship between:
 
 ```mermaid
 flowchart TB
-  subgraph EXT[Trust Network Expansion (Deferred / Commercial Activation)]
-    MN[Multi-node Signatures<br/>E1]:::ext
-    TP[Third-party Verification<br/>E2]:::ext
-    TA[Chained Time Anchors<br/>E3]:::ext
+
+  subgraph EXT[Trust Network Expansion]
+    MN[Multi-node Signatures (E1)]
+    TP[Third-party Verification (E2)]
+    TA[Chained Time Anchors (E3)]
   end
 
-  subgraph BOB[Bridge-of-Bridge (Frozen / Optional)]
-    CC[Cross-platform recomputation convergence<br/>(out of Core scope)]:::bob
-    AD[Compatibility adapters / SDKs]:::bob
-    TOOL[3rd-party tooling ecosystem]:::bob
+  subgraph BOB[Bridge-of-Bridge]
+    CC[Cross-platform recomputation convergence]
+    AD[Compatibility adapters / SDKs]
+    TOOL[3rd-party tooling ecosystem]
   end
 
-  subgraph BR[Bridge (Open for integration)]
-    RV[Reference Verifier (browser/cli)]:::bridge
-    API[Integration Interface / API endpoints]:::bridge
-    DOC[Spec + Freeze Notice]:::bridge
+  subgraph BR[Bridge]
+    RV[Reference Verifier (browser/cli)]
+    API[Integration Interface / API endpoints]
+    DOC[Spec + Freeze Notice]
   end
 
-  subgraph CORE[AuditVisa Core (Frozen / Operational)]
-    PK[Public Key Anchor<br/>/.well-known/auditvisa.pub]:::core
-    IS[Issuer Signature<br/>Ed25519]:::core
-    VID[VisaID Generation<br/>AV-YYYYMMDD-NODE-RUNHASH6]:::core
-    PKG[Proof Package JSON<br/>auditvisa-v0.2.md spec]:::core
-    DEL[Delivery Artifacts<br/>JSON / HTML / ZIP]:::core
-    GOV[Core / Bridge Governance<br/>freeze policy]:::core
+  subgraph CORE[AuditVisa Core]
+    PK[Public Key Anchor: /.well-known/auditvisa.pub]
+    IS[Issuer Signature: Ed25519]
+    VID[VisaID: AV-YYYYMMDD-NODE-RUNHASH6]
+    PKG[Proof Package JSON (spec v0.2)]
+    DEL[Delivery: JSON / HTML / ZIP]
+    GOV[Governance: Core / Bridge / Bridge-of-Bridge]
   end
 
-  subgraph PIPE[Agent Pipeline (Running)]
-    ST[Stripe Checkout / Events]:::pipe
-    RUN[Runner Agent<br/>consume payloads]:::pipe
-    WK[Audit Worker<br/>policy checks]:::pipe
-    TM[systemd timer]:::pipe
+  subgraph PIPE[Agent Pipeline]
+    TM[systemd timer]
+    ST[Stripe events]
+    RUN[Runner agent]
+    WK[Audit worker]
   end
 
   subgraph WORLD[External World]
-    TGT[Targets<br/>domains/endpoints]:::world
-    CUS[Customers / Consumers<br/>humans + machines]:::world
-    VER[External Verifiers]:::world
-    ECO[Agent Economy / Node Ecosystem]:::world
+    TGT[Targets: domains / endpoints]
+    CUS[Consumers: humans + machines]
+    VER[External verifiers]
+    ECO[Node ecosystem / agent economy]
   end
 
   TM --> RUN
   ST --> RUN
   RUN --> WK
+  TGT --> WK
+
   WK --> PKG
+  VID --> PKG
+  PK --> IS
   PKG --> IS
   IS --> DEL
-  PK --> IS
-  VID --> PKG
 
   DEL --> CUS
   CUS --> VER
@@ -148,21 +151,12 @@ flowchart TB
   CC --> AD
   AD --> TOOL
 
-  EXT -. attaches later .-> CORE
-  MN -.-> PKG
-  TP -.-> PKG
-  TA -.-> PKG
-
-  WORLD --> TGT
-  TGT --> WK
+  EXT -. deferred .-> CORE
+  MN -. attaches .-> PKG
+  TP -. attaches .-> PKG
+  TA -. attaches .-> PKG
 
   CUS --> ECO
   ECO -. future trust linking .-> EXT
 
-  classDef core fill:#111827,stroke:#6b7280,color:#e5e7eb;
-  classDef bridge fill:#0b1220,stroke:#93c5fd,color:#e5e7eb;
-  classDef bob fill:#1f2937,stroke:#f59e0b,color:#fde68a;
-  classDef ext fill:#0f172a,stroke:#34d399,color:#d1fae5;
-  classDef pipe fill:#0b0d12,stroke:#a7b0c0,color:#e9eefc;
-  classDef world fill:#0b0d12,stroke:#374151,color:#e9eefc;
 
