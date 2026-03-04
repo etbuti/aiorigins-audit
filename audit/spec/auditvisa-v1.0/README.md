@@ -88,75 +88,75 @@ The following diagram shows the relationship between:
 ```mermaid
 flowchart TB
 
-  subgraph EXT[Trust Network Expansion]
-    MN[Multi-node Signatures (E1)]
-    TP[Third-party Verification (E2)]
-    TA[Chained Time Anchors (E3)]
-  end
+subgraph EXT[Trust Network Expansion]
+  MN[Multi node signatures E1]
+  TP[Third party verification E2]
+  TA[Chained time anchors E3]
+end
 
-  subgraph BOB[Bridge-of-Bridge]
-    CC[Cross-platform recomputation convergence]
-    AD[Compatibility adapters / SDKs]
-    TOOL[3rd-party tooling ecosystem]
-  end
+subgraph BOB[Bridge of Bridge]
+  CC[Cross platform recomputation]
+  AD[Compatibility adapters]
+  TOOL[Third party tooling]
+end
 
-  subgraph BR[Bridge]
-    RV[Reference Verifier (browser/cli)]
-    API[Integration Interface / API endpoints]
-    DOC[Spec + Freeze Notice]
-  end
+subgraph BR[Bridge]
+  RV[Reference verifier]
+  API[Integration interface]
+  DOC[Spec and freeze notice]
+end
 
-  subgraph CORE[AuditVisa Core]
-    PK[Public Key Anchor: /.well-known/auditvisa.pub]
-    IS[Issuer Signature: Ed25519]
-    VID[VisaID: AV-YYYYMMDD-NODE-RUNHASH6]
-    PKG[Proof Package JSON (spec v0.2)]
-    DEL[Delivery: JSON / HTML / ZIP]
-    GOV[Governance: Core / Bridge / Bridge-of-Bridge]
-  end
+subgraph CORE[AuditVisa Core]
+  PK[Public key anchor well known auditvisa pub]
+  IS[Issuer signature Ed25519]
+  VID[VisaID AV YYYYMMDD NODE RUNHASH6]
+  PKG[Proof package JSON spec v0 2]
+  DEL[Delivery JSON HTML ZIP]
+  GOV[Governance Core Bridge Bridge of Bridge]
+end
 
-  subgraph PIPE[Agent Pipeline]
-    TM[systemd timer]
-    ST[Stripe events]
-    RUN[Runner agent]
-    WK[Audit worker]
-  end
+subgraph PIPE[Agent pipeline]
+  TM[Systemd timer]
+  ST[Stripe events]
+  RUN[Runner agent]
+  WK[Audit worker]
+end
 
-  subgraph WORLD[External World]
-    TGT[Targets: domains / endpoints]
-    CUS[Consumers: humans + machines]
-    VER[External verifiers]
-    ECO[Node ecosystem / agent economy]
-  end
+subgraph WORLD[External world]
+  TGT[Targets domains endpoints]
+  CUS[Consumers humans machines]
+  VER[External verifiers]
+  ECO[Node ecosystem]
+end
 
-  TM --> RUN
-  ST --> RUN
-  RUN --> WK
-  TGT --> WK
+TM --> RUN
+ST --> RUN
+RUN --> WK
+TGT --> WK
 
-  WK --> PKG
-  VID --> PKG
-  PK --> IS
-  PKG --> IS
-  IS --> DEL
+WK --> PKG
+VID --> PKG
+PK --> IS
+PKG --> IS
+IS --> DEL
 
-  DEL --> CUS
-  CUS --> VER
+DEL --> CUS
+CUS --> VER
 
-  VER --> RV
-  RV --> DOC
-  RV --> API
+VER --> RV
+RV --> DOC
+RV --> API
 
-  VER -. divergence possible .-> CC
-  CC --> AD
-  AD --> TOOL
+VER -. divergence possible .-> CC
+CC --> AD
+AD --> TOOL
 
-  EXT -. deferred .-> CORE
-  MN -. attaches .-> PKG
-  TP -. attaches .-> PKG
-  TA -. attaches .-> PKG
+EXT -. deferred .-> CORE
+MN -. attaches .-> PKG
+TP -. attaches .-> PKG
+TA -. attaches .-> PKG
 
-  CUS --> ECO
-  ECO -. future trust linking .-> EXT
+CUS --> ECO
+ECO -. future trust linking .-> EXT
 
 
