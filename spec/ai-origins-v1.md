@@ -1,3 +1,18 @@
+AI Origins Protocol Specification v1.0
+
+Sections:
+
+Node Specification
+/spec/node/v1
+
+Network Specification
+/spec/network/v1
+
+Admission Specification
+/spec/admission/v1
+
+⸻
+
 AI Origins Protocol
 
 Version 1.0
