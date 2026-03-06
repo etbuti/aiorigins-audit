@@ -1,0 +1,22 @@
+{
+  "schema": "https://aiorigins.org/spec/node/v1",
+  "network": "AI Origins",
+  "policy_version": "Join Node Spec v1.0",
+  "node_id": "fixed-qingdao-01",
+  "node_role": "fixed",
+  "node_label": "Qingdao Fixed Node",
+  "operator": {
+    "name": "Evan Bei",
+    "contact": "toptrust@gmail.com"
+  },
+  "region": "CN-QD",
+  "transport": {
+    "type": "wireguard",
+    "wg_address": "10.66.66.10/32",
+    "endpoint": "qingdao.example.net:51820",
+    "public_key": "BASE64_PUBLIC_KEY"
+  },
+  "capabilities": ["presence", "rpc", "witness"],
+  "admission": "reviewed",
+  "updated_at": "2026-03-06T00:00:00Z"
+}
