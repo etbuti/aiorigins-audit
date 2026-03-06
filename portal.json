@@ -1,1 +1,60 @@
-..
+{
+  "portal.json": {
+    "schema": "https://aiorigins.org/spec/portal/v1",
+    "name": "AI Origins Portal",
+    "id": "aiorigins-portal",
+    "root": "https://aiorigins.org/",
+    "canonical": "https://aiorigins.org/",
+    "network": "AI Origins",
+    "description": "Public portal for AI Origins network entry, protocol explanation, node onboarding, verification guidance, and audit-aware trust access.",
+    "operator": {
+      "name": "Evan Bei",
+      "contact": "toptrust@gmail.com"
+    },
+    "sections": [
+      {
+        "name": "home",
+        "url": "https://aiorigins.org/",
+        "purpose": "network entry"
+      },
+      {
+        "name": "join",
+        "url": "https://aiorigins.org/join/",
+        "purpose": "node onboarding"
+      },
+      {
+        "name": "spec",
+        "url": "https://aiorigins.org/spec/",
+        "purpose": "architecture and protocol"
+      },
+      {
+        "name": "rules",
+        "url": "https://aiorigins.org/rules/",
+        "purpose": "admission policy"
+      },
+      {
+        "name": "verify",
+        "url": "https://aiorigins.org/verify/",
+        "purpose": "join verification"
+      },
+      {
+        "name": "nodes",
+        "url": "https://aiorigins.org/nodes/",
+        "purpose": "node categories"
+      },
+      {
+        "name": "audit",
+        "url": "https://aiorigins.org/audit/",
+        "purpose": "trust and evidence layer"
+      }
+    ],
+    "machine_readable": {
+      "node": "https://aiorigins.org/node.json",
+      "portal": "https://aiorigins.org/portal.json",
+      "agent": "https://aiorigins.org/agent.json"
+    },
+    "navigation_model": "protocol-first",
+    "status": "active",
+    "updated_at": "2026-03-06T00:00:00Z"
+  },
+ 
