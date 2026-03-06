@@ -1,1 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Origins · Join Verification</title>
+<meta name="description" content="Join Check verification interface for AI Origins nodes." />
+<style>
+:root{--bg:#0b0d12;--card:#131823;--text:#eaf0fb;--muted:#9aa6bd;--line:#253044;--accent:#7dd3fc}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui}
+.wrap{max-width:1100px;margin:auto;padding:32px 20px}
+h1{font-size:38px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px}
+pre{background:#0e1320;border:1px solid var(--line);border-radius:10px;padding:14px;color:#cfe2ff;overflow:auto}
+.muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
 
+<h1>Join Verification</h1>
+<p class="muted">Verification interface for nodes requesting admission to the AI Origins network.</p>
+
+<div class="card">
+<h2>Join Check API</h2>
+<pre>POST /api/join-check
+Content-Type: application/json
+
+{
+ "network":"AI Origins",
+ "policy_version":"Join Node Spec v1.0",
+ "node_id":"fixed-qingdao-01",
+ "node_role":"fixed",
+ "region":"CN-QD",
+ "endpoint":"qingdao.example.net:51820",
+ "public_key":"BASE64_PUBLIC_KEY",
+ "metadata_url":"https://example.org/node.json"
+}</pre>
+</div>
+
+<div class="card">
+<h2>Expected response</h2>
+<pre>{
+ "ok": true,
+ "status": "PASS",
+ "checks": {
+   "metadata": "PASS",
+   "public_key": "PASS",
+   "endpoint": "WARN",
+   "policy": "PASS"
+ }
+}</pre>
+</div>
+
+<div class="card">
+<h2>Status meaning</h2>
+<ul>
+<li><strong>PASS</strong> – node meets protocol rules.</li>
+<li><strong>WARN</strong> – minor issues but acceptable.</li>
+<li><strong>FAIL</strong> – node incompatible with policy.</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Typical verification flow</h2>
+<pre>prepare node.json
+→ deploy node
+→ run join-check
+→ PASS / WARN / FAIL
+→ admission review
+→ node activated</pre>
+</div>
+
+</div>
+</body>
+</html>
