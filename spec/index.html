@@ -1,1 +1,304 @@
-..
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Origins · Network Architecture</title>
+  <meta name="description" content="AI Origins network architecture: core, fixed, mobile, reserve, onboarding layer, trust layer, and Eurasian node topology." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://aiorigins.org/spec/" />
+  <style>
+    :root{
+      --bg:#0b0d12;
+      --card:#131823;
+      --muted:#99a3b5;
+      --text:#eaf0fb;
+      --line:#253044;
+      --accent:#7dd3fc;
+      --accent2:#a78bfa;
+      --ok:#34d399;
+      --max:1140px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{max-width:var(--max);margin:0 auto;padding:28px 18px 72px}
+    .hero{padding:36px 0 18px;border-bottom:1px solid var(--line)}
+    .eyebrow{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+    h1{font-size:40px;line-height:1.08;margin:16px 0 12px}
+    h2{font-size:28px;line-height:1.2;margin:0 0 12px}
+    h3{margin:0 0 8px;font-size:18px}
+    .lead{max-width:900px;color:var(--muted);font-size:18px}
+    .section{padding:28px 0;border-bottom:1px solid var(--line)}
+    .grid{display:grid;gap:16px}
+    .cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+    .mono{font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0e1320;border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto;color:#d8e7ff;white-space:pre-wrap}
+    .muted{color:var(--muted)}
+    .tag{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted);margin:0 8px 8px 0}
+    .kpi{font-size:30px;font-weight:800;margin-top:6px}
+    .ok{color:var(--ok)}
+    .note{padding:14px 16px;border-left:3px solid var(--accent);background:#101724;border-radius:10px;color:#dbe7f6}
+    ul{margin:10px 0 0 18px;padding:0}
+    li{margin:6px 0}
+    @media (max-width:900px){
+      .cols-2,.cols-3{grid-template-columns:1fr}
+      h1{font-size:32px}
+      .lead{font-size:17px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <span class="eyebrow">AI Origins · Network Architecture</span>
+      <h1>Core, fixed, mobile, reserve — a protocol-led node network built around identity, transport, and trust.</h1>
+      <p class="lead">
+        AI Origins is designed as a specification network rather than a hardware sales network. The core idea is simple: publish the rules, define the node roles, standardize the identity and transport interface, and let compliant operators join through protocol compatibility and trust-aware admission. Existing audit files and folders can remain untouched if they are not in conflict; the architecture grows by layering, not by destructive rearrangement.
+      </p>
+    </header>
+
+    <section class="section">
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>Core principle</h3>
+          <div class="kpi">Spec-first</div>
+          <p class="muted">Implementation may vary. Identity, endpoint correctness, protocol compatibility, and admission policy remain fixed.</p>
+        </div>
+        <div class="card">
+          <h3>Transport model</h3>
+          <div class="kpi">10.66.66.x</div>
+          <p class="muted">Private mesh transport based on WireGuard, with role-based address ranges and future room for growth.</p>
+        </div>
+        <div class="card">
+          <h3>Trust model</h3>
+          <div class="kpi">Audit layer</div>
+          <p class="muted">Join, service, and trust stay separated: onboarding is one layer, audit is another, core authority remains tighter.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommended site structure</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Public structure</h3>
+<pre class="mono">https://aiorigins.org/
+https://aiorigins.org/join/
+https://aiorigins.org/spec/
+https://aiorigins.org/rules/
+https://aiorigins.org/verify/
+https://aiorigins.org/nodes/
+https://aiorigins.org/audit/
+https://aiorigins.org/node.json
+https://aiorigins.org/portal.json
+https://aiorigins.org/agent.json</pre>
+        </div>
+        <div class="card">
+          <h3>Layer meaning</h3>
+          <ul>
+            <li><strong>/join/</strong> — public onboarding entry</li>
+            <li><strong>/spec/</strong> — architecture and protocol definition</li>
+            <li><strong>/rules/</strong> — admission and role policy</li>
+            <li><strong>/verify/</strong> — Join Check explanation or interface</li>
+            <li><strong>/nodes/</strong> — node categories and examples</li>
+            <li><strong>/audit/</strong> — trust and evidence layer</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note" style="margin-top:16px">Your existing audit-era folders and files do not need to be moved merely for neatness. If they do not conflict with the new layout, leave them in place. The safer rule is: preserve working trust-layer files, add new onboarding/spec pages alongside them, and avoid touching anything that may break a stable path.</div>
+    </section>
+
+    <section class="section">
+      <h2>Node role model</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>CORE</h3>
+          <p>Anchor node. Governance, protocol source, identity root, audit root, and admission authority.</p>
+          <span class="tag">core-london</span><span class="tag">high trust</span><span class="tag">private control</span>
+        </div>
+        <div class="card">
+          <h3>FIXED</h3>
+          <p>Long-running production nodes with stable location and durable connectivity. Suitable for service execution, regional support, and later quorum evolution.</p>
+          <span class="tag">fixed-qingdao</span><span class="tag">fixed-helsinki</span><span class="tag">fixed-vienna</span>
+        </div>
+        <div class="card">
+          <h3>MOBILE</h3>
+          <p>Portable presence node. Temporary online proof, witness logging, travel access, and light participation without carrying core production duties.</p>
+          <span class="tag">mobile-evan</span><span class="tag">presence</span><span class="tag">witness</span>
+        </div>
+        <div class="card">
+          <h3>RESERVE / EDGE / SERVICE</h3>
+          <p>Reserve nodes wait for deployment or replacement. Edge nodes are public-facing access points. Service nodes provide narrower scoped functions under policy constraints.</p>
+          <span class="tag">reserve-eu</span><span class="tag">edge</span><span class="tag">service</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Current Eurasian architecture</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Minimum stable shape</h3>
+<pre class="mono">                 core-london
+                (London VPS)
+                     │
+          ┌──────────┼──────────┐
+          │                     │
+   fixed-helsinki         fixed-qingdao
+     (Finland VPS)         (planned node)</pre>
+          <p class="muted">This is the first meaningful distributed shape: a core plus two fixed nodes. Once the third node is active, the structure stops being a mere tunnel pair and begins to act like a real network.</p>
+        </div>
+        <div class="card">
+          <h3>Expanded corridor</h3>
+<pre class="mono">                 core-london
+                      │
+        ┌─────────────┼─────────────┐
+        │             │             │
+ fixed-helsinki   fixed-vienna   fixed-qingdao
+        │             │             │
+ fixed-amsterdam fixed-istanbul fixed-incheon
+                                      │
+                                 fixed-fukuoka
+                                      │
+                                  mobile-evan</pre>
+          <p class="muted">This corridor is not required all at once. It shows the likely growth direction from Europe to East Asia, with mobile presence orbiting the fixed backbone.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Transport plan</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Address convention</h3>
+<pre class="mono">10.66.66.1      core-london
+10.66.66.10-19  fixed nodes
+10.66.66.20-29  mobile nodes
+10.66.66.30-39  reserve nodes
+10.66.66.40-49  edge/service nodes</pre>
+        </div>
+        <div class="card">
+          <h3>WireGuard peer model</h3>
+<pre class="mono">[Interface]
+PrivateKey = YOUR_PRIVATE_KEY
+Address = 10.66.66.10/32
+DNS = 1.1.1.1
+
+[Peer]
+PublicKey = CORE_LONDON_PUBLIC_KEY
+Endpoint = aiorigins.org:51820
+AllowedIPs = 10.66.66.0/24
+PersistentKeepalive = 25</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Identity model</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Node identity</h3>
+<pre class="mono">{
+  "schema": "https://aiorigins.org/spec/node/v1",
+  "network": "AI Origins",
+  "policy_version": "Join Node Spec v1.0",
+  "node_id": "fixed-qingdao-01",
+  "node_role": "fixed",
+  "node_label": "Qingdao Fixed Node",
+  "operator": {
+    "name": "Evan Bei",
+    "contact": "toptrust@gmail.com"
+  },
+  "region": "CN-QD",
+  "transport": {
+    "type": "wireguard",
+    "wg_address": "10.66.66.10/32",
+    "endpoint": "qingdao.example.net:51820",
+    "public_key": "BASE64_PUBLIC_KEY"
+  },
+  "capabilities": ["presence", "rpc", "witness"],
+  "admission": "reviewed",
+  "updated_at": "2026-03-06T00:00:00Z"
+}</pre>
+        </div>
+        <div class="card">
+          <h3>Why identity matters</h3>
+          <ul>
+            <li>It keeps hardware optional and protocol mandatory.</li>
+            <li>It lets operators implement by their own method.</li>
+            <li>It gives a consistent machine-readable declaration for trust checks.</li>
+            <li>It separates node naming, endpoint definition, and admission status.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Trust and onboarding layers</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Onboarding flow</h3>
+<pre class="mono">Read rules
+→ choose node role
+→ prepare node.json + public key + endpoint
+→ self-deploy by any compliant method
+→ run Join Check
+→ PASS / WARN / FAIL
+→ admission review if needed
+→ join network</pre>
+        </div>
+        <div class="card">
+          <h3>Join Check API sketch</h3>
+<pre class="mono">POST /api/join-check
+Content-Type: application/json
+
+{
+  "network": "AI Origins",
+  "policy_version": "Join Node Spec v1.0",
+  "node_id": "fixed-qingdao-01",
+  "node_role": "fixed",
+  "region": "CN-QD",
+  "endpoint": "qingdao.example.net:51820",
+  "public_key": "BASE64_PUBLIC_KEY",
+  "metadata_url": "https://example.org/node.json"
+}
+
+Response 200
+{
+  "ok": true,
+  "status": "PASS",
+  "checks": {
+    "metadata": "PASS",
+    "public_key": "PASS",
+    "endpoint": "WARN",
+    "policy": "PASS"
+  },
+  "message": "Node is protocol-compatible and may proceed to admission review."
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Operational rule for existing audit files</h2>
+      <div class="card">
+        <p>
+          Existing files and folders created during earlier audit work can remain where they are if they do not conflict with the new onboarding and specification pages. There is no benefit in moving stable trust-layer files merely for visual tidiness. The safer operational rule is:
+        </p>
+<pre class="mono">Do not touch working audit files unless there is a direct need.
+Add new pages alongside the working structure.
+Treat audit as the trust layer.
+Treat join/spec/rules/verify as the onboarding layer.
+Preserve stable paths first; optimize later.</pre>
+      </div>
+    </section>
+
+    <footer class="section" style="border-bottom:none;padding-bottom:0">
+      <p class="muted">AI Origins · Network Architecture · A protocol-led structure for node identity, transport compatibility, audit-aware trust, and Eurasian network growth.</p>
+    </footer>
+  </div>
+</body>
+</html>
