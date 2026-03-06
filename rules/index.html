@@ -1,1 +1,79 @@
-..
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Origins · Node Rules</title>
+<meta name="description" content="AI Origins node admission rules and participation policy." />
+<style>
+:root{--bg:#0b0d12;--card:#131823;--text:#eaf0fb;--muted:#9aa6bd;--line:#253044;--accent:#7dd3fc}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui}
+.wrap{max-width:1100px;margin:auto;padding:32px 20px}
+h1{font-size:38px;margin-bottom:10px}
+h2{margin-top:30px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px}
+.muted{color:var(--muted)}
+pre{background:#0e1320;border:1px solid var(--line);border-radius:10px;padding:14px;color:#cfe2ff;overflow:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>AI Origins Node Rules</h1>
+<p class="muted">Admission and participation policy for nodes joining the AI Origins network.</p>
+
+<div class="card">
+<h2>Core principle</h2>
+<p>The AI Origins network is a <strong>specification network</strong>. Hardware vendors, hosting method, and operating systems may differ, but node identity, protocol compatibility, endpoint correctness, and admission policy must follow the published rules.</p>
+</div>
+
+<div class="card">
+<h2>Node categories</h2>
+<ul>
+<li><strong>CORE</strong> – root governance and identity anchor.</li>
+<li><strong>FIXED</strong> – stable production nodes.</li>
+<li><strong>MOBILE</strong> – portable presence nodes.</li>
+<li><strong>RESERVE</strong> – standby infrastructure.</li>
+<li><strong>EDGE / SERVICE</strong> – public or limited-scope service nodes.</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Admission levels</h2>
+<ul>
+<li>Self-service: edge, witness, mobile</li>
+<li>Review required: service / fixed</li>
+<li>Invitation only: backbone / quorum / core-adjacent</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Minimum requirements</h2>
+<ul>
+<li>Unique node identifier</li>
+<li>Valid public key</li>
+<li>Reachable endpoint</li>
+<li>Machine readable node.json</li>
+<li>Agreement with audit and abuse handling policy</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Example node identity</h2>
+<pre>{
+ "node_id":"fixed-qingdao-01",
+ "node_role":"fixed",
+ "region":"CN-QD",
+ "transport":"wireguard",
+ "wg_address":"10.66.66.10/32"
+}</pre>
+</div>
+
+<div class="card">
+<h2>Operational rule</h2>
+<p>Existing audit-era files should remain untouched unless a change is required. Stable paths are preserved first; structural optimisation can happen later.</p>
+</div>
+
+</div>
+</body>
+</html>
