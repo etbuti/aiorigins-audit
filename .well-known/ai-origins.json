@@ -1,0 +1,52 @@
+{
+  "name": "AI Origins Network Discovery",
+  "schema": "https://aiorigins.org/spec/discovery/v1",
+  "network": "AI Origins",
+  "root": "https://aiorigins.org/",
+  "description": "Well-known discovery entry for AI Origins protocol, node onboarding, and audit-aware trust layer.",
+
+  "operator": {
+    "name": "Evan Bei",
+    "contact": "toptrust@gmail.com"
+  },
+
+  "discovery": {
+    "home": "https://aiorigins.org/",
+    "node": "https://aiorigins.org/node.json",
+    "portal": "https://aiorigins.org/portal.json",
+    "agent": "https://aiorigins.org/agent.json",
+
+    "join": "https://aiorigins.org/join/",
+    "spec": "https://aiorigins.org/spec/",
+    "rules": "https://aiorigins.org/rules/",
+    "verify": "https://aiorigins.org/verify/",
+    "nodes": "https://aiorigins.org/nodes/",
+    "audit": "https://aiorigins.org/audit/"
+  },
+
+  "network_model": {
+    "type": "protocol-led node network",
+    "transport": "wireguard",
+    "mesh_range": "10.66.66.0/24",
+    "admission_states": ["PASS", "WARN", "FAIL"]
+  },
+
+  "node_roles": [
+    "core",
+    "fixed",
+    "mobile",
+    "reserve",
+    "edge",
+    "service",
+    "witness"
+  ],
+
+  "principles": [
+    "hardware optional, protocol compliance required",
+    "identity and endpoint correctness required",
+    "trust layer separated from onboarding layer",
+    "existing audit paths preserved when stable"
+  ],
+
+  "updated_at": "2026-03-06T00:00:00Z"
+}
