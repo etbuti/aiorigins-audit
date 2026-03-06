@@ -1,1 +1,168 @@
-..
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Origins · Node Map</title>
+<meta name="description" content="AI Origins node map: core, fixed, mobile, reserve, and expansion topology across the Eurasian corridor." />
+<link rel="canonical" href="https://aiorigins.org/nodes/" />
+<style>
+:root{--bg:#0b0d12;--card:#131823;--text:#eaf0fb;--muted:#9aa6bd;--line:#253044;--accent:#7dd3fc;--ok:#34d399}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+.wrap{max-width:1120px;margin:auto;padding:40px 20px}
+h1{font-size:40px;margin:0 0 8px}
+h2{margin-top:36px}
+h3{margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.muted{color:var(--muted)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+pre{background:#0e1320;border:1px solid var(--line);border-radius:10px;padding:14px;color:#cfe2ff;overflow:auto;white-space:pre-wrap}
+.tag{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted);margin:0 8px 8px 0}
+.kpi{font-size:28px;font-weight:800;margin-top:6px}
+.ok{color:var(--ok)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>AI Origins Node Map</h1>
+<p class="muted">A living map of node roles, current structure, and likely expansion paths across the AI Origins network.</p>
+
+<div class="grid">
+  <div class="card">
+    <h3>Current anchor</h3>
+    <div class="kpi">core-london</div>
+    <p class="muted">London VPS. Root discovery, protocol anchor, and trust-adjacent core node.</p>
+  </div>
+  <div class="card">
+    <h3>Stable fixed route</h3>
+    <div class="kpi">EU → CN</div>
+    <p class="muted">Current minimum stable route grows from London through Helsinki toward Qingdao.</p>
+  </div>
+  <div class="card">
+    <h3>Growth model</h3>
+    <div class="kpi">Protocol-led</div>
+    <p class="muted">Nodes do not need to be identical machines. They need to satisfy the same identity, transport, and admission rules.</p>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Minimal active shape</h2>
+<pre>                 core-london
+                (London VPS)
+                     │
+          ┌──────────┼──────────┐
+          │                     │
+   fixed-helsinki         fixed-qingdao
+   (Finland VPS)          (planned fixed node)
+          │                     │
+      edge/service          mobile nodes</pre>
+  <p class="muted">This is the smallest meaningful distributed shape: one core plus two fixed nodes. Once active, the network stops being a simple point-to-point arrangement and begins to act like a real node system.</p>
+</div>
+
+<div class="card">
+  <h2>Eurasian corridor</h2>
+<pre>                 core-london
+                      │
+        ┌─────────────┼─────────────┐
+        │             │             │
+ fixed-helsinki   fixed-vienna   fixed-qingdao
+        │             │             │
+ fixed-amsterdam fixed-istanbul fixed-incheon
+                                      │
+                                 fixed-fukuoka
+                                      │
+                                  mobile-evan</pre>
+  <p class="muted">This is a directional map rather than a promise of simultaneous deployment. It reflects realistic locations already available, familiar, or strategically practical for later expansion.</p>
+</div>
+
+<h2>Node categories</h2>
+<div class="grid">
+  <div class="card">
+    <h3>CORE</h3>
+    <p>High-trust root nodes. Governance, discovery, identity anchor, and protocol source.</p>
+    <span class="tag">core-london</span>
+    <span class="tag">private control</span>
+  </div>
+  <div class="card">
+    <h3>FIXED</h3>
+    <p>Long-running nodes in stable locations. Suitable for services, regional support, and later quorum development.</p>
+    <span class="tag">fixed-helsinki</span>
+    <span class="tag">fixed-qingdao</span>
+    <span class="tag">fixed-vienna</span>
+  </div>
+  <div class="card">
+    <h3>MOBILE</h3>
+    <p>Portable presence nodes used during travel, temporary deployment, witness logging, and lightweight access.</p>
+    <span class="tag">mobile-evan</span>
+    <span class="tag">presence</span>
+    <span class="tag">witness</span>
+  </div>
+  <div class="card">
+    <h3>RESERVE</h3>
+    <p>Standby nodes prepared for replacement, emergency coverage, or new location activation.</p>
+    <span class="tag">reserve-eu</span>
+    <span class="tag">reserve-asia</span>
+  </div>
+  <div class="card">
+    <h3>EDGE / SERVICE</h3>
+    <p>Public-facing or limited-scope infrastructure that may provide APIs, gateways, verification services, or regional access.</p>
+    <span class="tag">edge</span>
+    <span class="tag">service</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Illustrative node list</h2>
+  <div class="grid">
+    <div>
+      <h3>Current / active base</h3>
+      <ul>
+        <li>core-london-01</li>
+        <li>fixed-helsinki-01</li>
+        <li>fixed-qingdao-01</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Likely expansion points</h3>
+      <ul>
+        <li>fixed-vienna-01</li>
+        <li>fixed-istanbul-01</li>
+        <li>fixed-incheon-01</li>
+        <li>fixed-fukuoka-01</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Flexible classes</h3>
+      <ul>
+        <li>mobile-evan-01</li>
+        <li>reserve-eu-01</li>
+        <li>reserve-asia-01</li>
+        <li>edge-verify-01</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Address planning</h2>
+<pre>10.66.66.1      core
+10.66.66.10-19  fixed nodes
+10.66.66.20-29  mobile nodes
+10.66.66.30-39  reserve nodes
+10.66.66.40-49  edge/service nodes</pre>
+  <p class="muted">Node identity and role determine assignment. The network may grow without changing the model.</p>
+</div>
+
+<div class="card">
+  <h2>Operational note</h2>
+  <p>Existing audit-era folders and files remain untouched unless there is a clear technical need to change them. The node map and onboarding structure are layered on top of stable trust paths rather than replacing them.</p>
+</div>
+
+<p class="muted" style="margin-top:40px">AI Origins Node Map · visible structure for a protocol-led network</p>
+
+</div>
+</body>
+</html>
