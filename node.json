@@ -1,22 +1,100 @@
 {
   "schema": "https://aiorigins.org/spec/node/v1",
+  "name": "AI Origins Network",
+  "id": "aiorigins-root",
+  "root": "https://aiorigins.org/",
+  "canonical": "https://aiorigins.org/",
   "network": "AI Origins",
+  "site_type": "protocol-led node network",
   "policy_version": "Join Node Spec v1.0",
-  "node_id": "fixed-qingdao-01",
-  "node_role": "fixed",
-  "node_label": "Qingdao Fixed Node",
+  "description": "AI Origins publishes node specifications, onboarding rules, verification interfaces, and an audit-aware trust layer for protocol-compatible node participation.",
   "operator": {
     "name": "Evan Bei",
     "contact": "toptrust@gmail.com"
   },
-  "region": "CN-QD",
+  "public_entrypoints": {
+    "home": "https://aiorigins.org/",
+    "join": "https://aiorigins.org/join/",
+    "spec": "https://aiorigins.org/spec/",
+    "rules": "https://aiorigins.org/rules/",
+    "verify": "https://aiorigins.org/verify/",
+    "nodes": "https://aiorigins.org/nodes/",
+    "audit": "https://aiorigins.org/audit/"
+  },
+  "machine_readable": {
+    "node": "https://aiorigins.org/node.json",
+    "portal": "https://aiorigins.org/portal.json",
+    "agent": "https://aiorigins.org/agent.json"
+  },
+  "identity": {
+    "root_node_id": "core-london-01",
+    "root_role": "core",
+    "root_label": "London Core Node",
+    "root_region": "GB-LON"
+  },
   "transport": {
     "type": "wireguard",
-    "wg_address": "10.66.66.10/32",
-    "endpoint": "qingdao.example.net:51820",
-    "public_key": "BASE64_PUBLIC_KEY"
+    "address_space": "10.66.66.0/24",
+    "ranges": {
+      "core": "10.66.66.1",
+      "fixed": "10.66.66.10-19",
+      "mobile": "10.66.66.20-29",
+      "reserve": "10.66.66.30-39",
+      "edge_service": "10.66.66.40-49"
+    },
+    "notes": "Private mesh transport for AI Origins-compatible nodes. Actual peer assignment depends on role and admission tier."
   },
-  "capabilities": ["presence", "rpc", "witness"],
-  "admission": "reviewed",
+  "node_roles": [
+    "core",
+    "fixed",
+    "mobile",
+    "reserve",
+    "edge",
+    "service",
+    "witness"
+  ],
+  "admission": {
+    "self_service": [
+      "edge",
+      "mobile",
+      "witness"
+    ],
+    "review_required": [
+      "service",
+      "fixed"
+    ],
+    "invitation_only": [
+      "backbone",
+      "quorum",
+      "core_adjacent"
+    ]
+  },
+  "join_check": {
+    "path": "/api/join-check",
+    "method": "POST",
+    "status_model": [
+      "PASS",
+      "WARN",
+      "FAIL"
+    ]
+  },
+  "trust_layer": {
+    "audit_entry": "https://aiorigins.org/audit/",
+    "model": "audit-aware trust layer",
+    "principle": "Preserve working audit paths; add onboarding and specification layers alongside stable trust-layer files."
+  },
+  "recommended_structure": [
+    "/",
+    "/join/",
+    "/spec/",
+    "/rules/",
+    "/verify/",
+    "/nodes/",
+    "/audit/",
+    "/node.json",
+    "/portal.json",
+    "/agent.json"
+  ],
+  "status": "active",
   "updated_at": "2026-03-06T00:00:00Z"
 }
