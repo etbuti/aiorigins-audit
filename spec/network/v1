@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Origins Protocol Specification</title>
+<meta name="description" content="AI Origins protocol specifications: node identity model and network transport model." />
+<link rel="canonical" href="https://aiorigins.org/spec/" />
+<style>
+:root{--bg:#0b0d12;--card:#131823;--text:#eaf0fb;--muted:#9aa6bd;--line:#253044;--accent:#7dd3fc}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui}
+.wrap{max-width:1100px;margin:auto;padding:40px 20px}
+h1{font-size:40px;margin-bottom:6px}
+h2{margin-top:36px}
+h3{margin-top:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:16px}
+pre{background:#0e1320;border:1px solid var(--line);border-radius:10px;padding:14px;color:#cfe2ff;overflow:auto}
+.muted{color:var(--muted)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>AI Origins Protocol Specification</h1>
+<p class="muted">Reference specification for node identity, transport model, and admission logic used by the AI Origins network.</p>
+
+<div class="card">
+<h2>Specification Index</h2>
+<ul>
+<li><strong>/spec/node/v1</strong> — node identity specification</li>
+<li><strong>/spec/network/v1</strong> — network topology and transport model</li>
+<li><strong>/spec/admission/v1</strong> — node admission states and verification model</li>
+</ul>
+</div>
+
+<h2 id="node-v1">Node Specification v1</h2>
+<div class="card">
+<p>This specification defines the machine-readable identity required for a node to participate in the AI Origins network.</p>
+
+<h3>Required fields</h3>
+<ul>
+<li>node_id</li>
+<li>node_role</li>
+<li>region</li>
+<li>transport type</li>
+<li>public_key</li>
+<li>endpoint</li>
+</ul>
+
+<h3>Example</h3>
+<pre>{
+"schema":"https://aiorigins.org/spec/node/v1",
+"node_id":"fixed-qingdao-01",
+"node_role":"fixed",
+"region":"CN-QD",
+"transport":{
+  "type":"wireguard",
+  "wg_address":"10.66.66.10/32",
+  "endpoint":"qingdao.example.net:51820",
+  "public_key":"BASE64_PUBLIC_KEY"
+}
+}</pre>
+
+<p class="muted">Nodes may include additional metadata fields, but the required identity attributes must be present for verification.</p>
+</div>
+
+<h2 id="network-v1">Network Specification v1</h2>
+<div class="card">
+<p>The AI Origins network uses a private mesh transport model with role-based address allocation.</p>
+
+<h3>Transport</h3>
+<ul>
+<li>Transport type: WireGuard</li>
+<li>Private mesh range: 10.66.66.0/24</li>
+</ul>
+
+<h3>Address allocation</h3>
+<pre>
+10.66.66.1      core
+10.66.66.10-19  fixed nodes
+10.66.66.20-29  mobile nodes
+10.66.66.30-39  reserve nodes
+10.66.66.40-49  edge/service nodes
+</pre>
+
+<h3>Minimal network shape</h3>
+<pre>
+            core-london
+               │
+      ┌────────┼────────┐
+      │                 │
+fixed-helsinki     fixed-qingdao
+</pre>
+
+<p class="muted">Additional nodes may expand along Eurasian corridors without changing the protocol model.</p>
+</div>
+
+<h2 id="admission-v1">Admission Specification v1</h2>
+<div class="card">
+<p>Nodes joining the network must pass verification before admission.</p>
+
+<h3>Status model</h3>
+<ul>
+<li>PASS — compatible with protocol rules</li>
+<li>WARN — minor issues but acceptable</li>
+<li>FAIL — incompatible with policy</li>
+</ul>
+
+<h3>Join flow</h3>
+<pre>
+prepare node.json
+→ deploy node
+→ run join-check
+→ PASS / WARN / FAIL
+→ admission review
+→ node activated
+</pre>
+</div>
+
+<p class="muted" style="margin-top:40px">AI Origins Protocol · Node Specification v1 · Network Specification v1</p>
+
+</div>
+</body>
+</html>
