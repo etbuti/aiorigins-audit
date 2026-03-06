@@ -1,1 +1,98 @@
-..
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Origins Network</title>
+<meta name="description" content="AI Origins Network — protocol, node onboarding, and audit-aware trust layer." />
+<link rel="canonical" href="https://aiorigins.org/" />
+<style>
+:root{--bg:#0b0d12;--card:#131823;--text:#eaf0fb;--muted:#9aa6bd;--line:#253044;--accent:#7dd3fc}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+.wrap{max-width:1100px;margin:auto;padding:40px 20px}
+h1{font-size:42px;margin-bottom:8px}
+h2{margin-top:40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.muted{color:var(--muted)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+pre{background:#0e1320;border:1px solid var(--line);border-radius:10px;padding:14px;color:#cfe2ff;overflow:auto}
+.hero{margin-bottom:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+<h1>AI Origins Network</h1>
+<p class="muted">Protocol · Node Onboarding · Audit-aware Trust Layer</p>
+<p>The AI Origins network publishes open node specifications, transport rules, and admission policies. Operators deploy their own infrastructure and connect through protocol compatibility rather than hardware standardisation.</p>
+</div>
+
+<div class="grid">
+<div class="card">
+<h3>Join</h3>
+<p>Node onboarding guide, templates, and entry flow.</p>
+<p><a href="/join/">Open join documentation →</a></p>
+</div>
+
+<div class="card">
+<h3>Architecture</h3>
+<p>Network topology, node roles, and transport model.</p>
+<p><a href="/spec/">View architecture →</a></p>
+</div>
+
+<div class="card">
+<h3>Rules</h3>
+<p>Admission policy and participation requirements.</p>
+<p><a href="/rules/">Read node rules →</a></p>
+</div>
+
+<div class="card">
+<h3>Verification</h3>
+<p>Join Check interface and validation logic.</p>
+<p><a href="/verify/">Open verification docs →</a></p>
+</div>
+
+<div class="card">
+<h3>Audit Layer</h3>
+<p>Evidence and trust layer used by the network.</p>
+<p><a href="/audit/">Open audit layer →</a></p>
+</div>
+</div>
+
+<h2>Minimal Network Shape</h2>
+<div class="card">
+<pre>
+                core-london
+                   │
+        ┌──────────┼──────────┐
+        │                     │
+  fixed-helsinki        fixed-qingdao
+        │                     │
+      edge/service        mobile nodes
+</pre>
+</div>
+
+<h2>Transport Range</h2>
+<div class="card">
+<pre>
+10.66.66.1      core
+10.66.66.10-19  fixed nodes
+10.66.66.20-29  mobile nodes
+10.66.66.30-39  reserve nodes
+10.66.66.40-49  edge/service nodes
+</pre>
+</div>
+
+<h2>Operational Note</h2>
+<div class="card">
+<p>Existing audit-era files and directories should remain untouched unless there is a clear functional reason to change them. Stable paths are preserved first; structural refinements can occur later.</p>
+</div>
+
+<p class="muted" style="margin-top:40px">AI Origins Network · protocol-led node infrastructure</p>
+
+</div>
+</body>
+</html>
