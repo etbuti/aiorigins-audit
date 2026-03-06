@@ -1,1 +1,52 @@
-..
+  "agent.json": {
+    "schema": "https://aiorigins.org/spec/agent/v1",
+    "name": "AI Origins Agent Entry",
+    "id": "aiorigins-agent",
+    "root": "https://aiorigins.org/agent.json",
+    "network": "AI Origins",
+    "description": "Machine-readable entry for agents interacting with AI Origins protocol, onboarding, and trust-aware network layers.",
+    "operator": {
+      "name": "Evan Bei",
+      "contact": "toptrust@gmail.com"
+    },
+    "discovery": {
+      "home": "https://aiorigins.org/",
+      "node": "https://aiorigins.org/node.json",
+      "portal": "https://aiorigins.org/portal.json",
+      "join": "https://aiorigins.org/join/",
+      "spec": "https://aiorigins.org/spec/",
+      "rules": "https://aiorigins.org/rules/",
+      "verify": "https://aiorigins.org/verify/",
+      "audit": "https://aiorigins.org/audit/"
+    },
+    "capabilities": [
+      "read_network_description",
+      "read_node_rules",
+      "read_join_requirements",
+      "read_verification_model",
+      "read_trust_layer_entrypoints"
+    ],
+    "join_model": {
+      "type": "specification-led",
+      "identity_required": true,
+      "transport_required": true,
+      "verification_required": true,
+      "admission_states": [
+        "PASS",
+        "WARN",
+        "FAIL"
+      ]
+    },
+    "transport": {
+      "type": "wireguard",
+      "private_mesh_range": "10.66.66.0/24"
+    },
+    "notes": [
+      "Hardware is optional; protocol compliance is essential.",
+      "Existing audit-layer paths should be preserved unless direct changes are necessary.",
+      "Higher-trust roles may require review or invitation."
+    ],
+    "status": "active",
+    "updated_at": "2026-03-06T00:00:00Z"
+  }
+}
