@@ -1,3 +1,5 @@
+mermaid
+
 flowchart LR
 
 A[Target Domain]
