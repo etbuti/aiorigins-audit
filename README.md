@@ -1,3 +1,8 @@
+Origin Audit Standard (OAS) is a deterministic audit proof framework
+that separates Proof, Verification, and Trust.
+
+Reference implementation of the Origin Audit Standard (OAS).
+
 # Origin Audit Standard (OAS)
 
 Origin Audit Standard (OAS) is a deterministic proof framework for generating,
