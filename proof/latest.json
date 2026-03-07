@@ -1,0 +1,14 @@
+{
+  "version": "0.1",
+  "kind": "proof-object",
+  "visa_id": "AV-2026-000001",
+  "authority": "aiorigins.org",
+  "issuer_node": "aiorigins-london-001",
+  "policy": "AuditVisa v1.0",
+  "event_type": "domain_audit",
+  "target": "https://example.com/",
+  "status": "issued",
+  "timestamp": "2026-03-07T00:00:00Z",
+  "evidence_hash": "sha256:REPLACE_WITH_REAL_HASH",
+  "evidence_url": "https://aiorigins.org/proof/evidence/AV-2026-000001.json"
+}
