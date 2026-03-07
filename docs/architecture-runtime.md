@@ -40,7 +40,7 @@ artifacts/*
 
 Anchor Chain
 Append-only hash chain.
-/var/lib/origin-oas/anchors/anchor.log
+anchor.log (append-only anchor chain)
 
 Verification
 Open deterministic verification algorithm.
