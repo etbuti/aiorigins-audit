@@ -1,0 +1,20 @@
+{
+  "version": "0.1",
+  "kind": "proof-node",
+  "node_id": "aiorigins-london-001",
+  "authority": "aiorigins.org",
+  "title": "AI Origins Proof Node",
+  "description": "Machine-readable proof and audit node for AI Origins.",
+  "roles": [
+    "audit",
+    "issuer",
+    "discovery"
+  ],
+  "discovery_endpoint": "https://aiorigins.org/.well-known/agent-proof",
+  "proof_index": "https://aiorigins.org/proof/index.json",
+  "latest_proof": "https://aiorigins.org/proof/latest.json",
+  "policy": "AuditVisa v1.0",
+  "status": "active",
+  "location": "London",
+  "updated_at": "2026-03-07T00:00:00Z"
+}
