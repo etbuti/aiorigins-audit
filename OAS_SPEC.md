@@ -207,3 +207,77 @@ These extensions do not modify the core proof algorithm.
 This document defines **Origin Audit Standard v0.1 Draft**.
 
 The specification reflects the current reference implementation.
+
+## Protocol Layer Structure
+
+```mermaid
+flowchart TB
+
+subgraph L1["Reality Layer"]
+A1[Observed System State]
+end
+
+subgraph L2["Proof Layer"]
+B1[Runner]
+B2[Proof Package]
+B3[manifest.json]
+B4[artifacts]
+end
+
+subgraph L3["Integrity Layer"]
+C1[Self Hash]
+C2[Anchor Chain]
+C3[append-only log]
+end
+
+subgraph L4["Verification Layer"]
+D1[Deterministic Verification]
+D2[manifest check]
+D3[artifact check]
+D4[anchor check]
+end
+
+subgraph L5["Trust Layer"]
+E1[Node Identity]
+E2[Signatures]
+E3[append-only endorsements]
+end
+
+A1 --> B1
+B1 --> B2
+B2 --> B3
+B2 --> B4
+
+B3 --> C1
+C1 --> C2
+C2 --> C3
+
+B3 --> D1
+B4 --> D1
+C3 --> D1
+
+D1 --> D2
+D1 --> D3
+D1 --> D4
+
+D1 --> E2
+E1 --> E2
+E2 --> E3
+```
+
+OAS separates five layers:
+
+1. Reality Layer  
+   The observed state of a domain, service, or network endpoint.
+
+2. Proof Layer  
+   A runner records the observation and produces a proof package.
+
+3. Integrity Layer  
+   The proof is locked by self-hash and appended to an anchor chain.
+
+4. Verification Layer  
+   Anyone can recompute proof validity using a deterministic algorithm.
+
+5. Trust Layer  
+   Independent nodes may append signatures without modifying the original proof.
