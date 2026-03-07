@@ -1,0 +1,20 @@
+{
+  "version": "0.1",
+  "kind": "proof-index",
+  "authority": "aiorigins.org",
+  "title": "AI Origins Proof Index",
+  "issuer_node": "aiorigins-london-001",
+  "policy": "AuditVisa v1.0",
+  "features": [
+    "machine-readable-proof",
+    "audit-evidence",
+    "visa-id"
+  ],
+  "endpoints": {
+    "discovery": "https://aiorigins.org/.well-known/agent-proof",
+    "node": "https://aiorigins.org/node",
+    "latest": "https://aiorigins.org/proof/latest.json"
+  },
+  "status": "active",
+  "updated_at": "2026-03-07T00:00:00Z"
+}
