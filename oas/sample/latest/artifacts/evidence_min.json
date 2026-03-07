@@ -1,0 +1,28 @@
+{
+  "schema": "oas:evidence-min@0.1",
+  "generated_at": "2026-03-02T13:04:25Z",
+  "target": {
+    "domain": "iana.org"
+  },
+  "dns": {
+    "A": [
+      "192.0.43.8"
+    ],
+    "AAAA": [
+      "2001:500:88:200::8"
+    ],
+    "error": ""
+  },
+  "http": {
+    "https": {
+      "url": "https://iana.org",
+      "status": 200,
+      "error": ""
+    },
+    "http": {
+      "url": "http://iana.org",
+      "status": 200,
+      "error": ""
+    }
+  }
+}

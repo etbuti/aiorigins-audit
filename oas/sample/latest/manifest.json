@@ -1,7 +1,7 @@
 {
-  "report_id": "AIR-2026-03-02T11:45:49Z",
+  "report_id": "AIR-2026-03-02T13:04:25Z",
   "version": "0.1",
-  "generated_at": "2026-03-02T11:45:49Z",
+  "generated_at": "2026-03-02T13:04:26Z",
   "target": {
     "domain": "iana.org"
   },
@@ -9,11 +9,31 @@
     "runner": "oas-test-runner",
     "issuer_mode": "origin-only"
   },
-  "artifacts": [],
+  "artifacts": [
+    {
+      "path": "artifacts/evidence_min.json",
+      "sha256": "ae3483934f2d94b1a2c4a88e0da07e6b8ff45cc6049afcf65366ae007a15191a",
+      "bytes": 443,
+      "mime": "application/json"
+    }
+  ],
   "anchor": {
-    "anchor_sequence": 26,
-    "previous_hash": "053a0a6b6bc007ed11ff5e97b7c50d9f8fe85380c916a29bdbe5efe3d81e3e73",
-    "current_hash": "40507d46561ec5c6a93708f7332a51874c3532eff3acde7287135ecacb141f9e"
+    "anchor_sequence": 43,
+    "previous_hash": "1789d82b251e445a401bcbba0c5905640e7f5787cf501cc70722c7d47d965315",
+    "current_hash": "695799e28c1ad58bcd7b440c3c0f01108e628cff1ea201b1b895d88f81e794b1"
   },
-  "signatures": []
+  "oas": {
+    "standard": "Origin Audit Standard",
+    "version": "0.1",
+    "profile": "sample-minimal"
+  },
+  "signatures": [
+    {
+      "node_id": "aiorigins.org",
+      "key_id": "oas-ed25519-2026",
+      "algorithm": "ed25519",
+      "signed_at": "2026-03-07T15:56:00Z",
+      "signature": "qPzNaqPw+qZ5gZvyZp66V6M34f8kjNi53nF5gR4f3AOAANUcu+3/Pj3woxaIXeSj3L1rrTgoInUl62aakUcrBA=="
+    }
+  ]
 }
