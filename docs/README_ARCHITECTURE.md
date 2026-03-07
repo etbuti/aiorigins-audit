@@ -6,32 +6,38 @@ This repository contains the reference implementation of the **Origin Audit Stan
 
 ## System Overview
 
-Reality
-│
-▼
-Runner
-│
-▼
-Proof Package
-(manifest.json + artifacts)
-│
-▼
-Anchor Chain
-(anchor.log)
-│
-▼
-Verification
-(verify_oas.py)
-│
-▼
-Signature Layer
-(oas-sign)
-│
-▼
-Node Identity
-(node.json)
+```mermaid
+flowchart TB
 
-This diagram shows the **runtime flow of an OAS proof**.
+Reality["Reality / Observed State"]
+
+Runner["Runner
+generate proof"]
+
+Proof["Proof Package
+manifest.json
+artifacts"]
+
+Anchor["Anchor Chain
+anchor.log"]
+
+Verify["Verification
+verify_oas.py"]
+
+Sign["Signature Layer
+oas-sign"]
+
+Node["Node Identity
+node.json"]
+
+Reality --> Runner
+Runner --> Proof
+Proof --> Anchor
+Proof --> Verify
+Anchor --> Verify
+Verify --> Sign
+Sign --> Node
+```
 
 ---
 
@@ -64,4 +70,3 @@ Verification
 Trust  
 
 Trust grows through **signatures**, not through **consensus complexity**.
-
