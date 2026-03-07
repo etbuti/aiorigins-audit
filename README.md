@@ -113,7 +113,6 @@ oas/
 verify/
 verify_oas.py
 
-README.md
 ---
 
 # Project Status
