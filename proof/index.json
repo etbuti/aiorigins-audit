@@ -12,7 +12,7 @@
   ],
   "endpoints": {
     "discovery": "https://aiorigins.org/.well-known/agent-proof",
-    "node": "https://aiorigins.org/node",
+    "node": "https://aiorigins.org/proof/node.json",
     "latest": "https://aiorigins.org/proof/latest.json"
   },
   "status": "active",
