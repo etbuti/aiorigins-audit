@@ -1,74 +1,78 @@
-Origin Audit Standard (OAS) is a deterministic audit proof framework
-that separates Proof, Verification, and Trust.
-
-Reference implementation of the Origin Audit Standard (OAS).
-
 # Origin Audit Standard (OAS)
 
-Origin Audit Standard (OAS) is a deterministic proof framework for generating,
-anchoring, verifying, and signing audit evidence packages.
+Origin Audit Standard (OAS) is a deterministic audit proof framework  
+that separates **Proof**, **Verification**, and **Trust**.
 
-The system separates three layers:
+The system allows audit evidence to be generated, anchored, verified,  
+and optionally endorsed by independent nodes.
+
+---
+
+# Core Model
+
+OAS separates three layers:
 
 Proof  
 Verification  
-Trust
+Trust  
 
-Trust grows through signatures, not through protocol consensus.
-
----
-
-# Core Components
-
-Runner  
-Generates audit reports and proof packages.
-
-Verifier  
-Recomputes deterministic proof and validates integrity.
-
-Signature Layer  
-Appends node trust endorsements without modifying the proof.
+Trust grows through **signatures**, not through **consensus complexity**.
 
 ---
 
-# Runtime Architecture
+# System Architecture
 
-Actual system currently running:
+Two diagrams describe the system.
+
+Runtime architecture:
 
 docs/architecture-runtime.md
 
----
-
-# Growth Architecture
-
-Future trust-layer expansion path:
+Growth architecture:
 
 docs/architecture-growth.md
 
 ---
 
-# Proof Structure
+# Proof Package
 
-Example proof package:
+An OAS report produces a deterministic proof package.
+
+Example structure:
 
 manifest.json
 artifacts/*
-Anchor chain:
+The proof hash is stored in the anchor chain.
+
+---
+
+# Anchor Chain
+
+OAS uses an append-only hash chain.
+
+Example:
+
+seq timestamp hash prev_hash domain
+File:
 
 anchor.log
+This ensures proof immutability.
+
 ---
 
 # Verification
 
-Verification tool:
+Anyone can independently verify a proof package.
+
+Verifier:
 
 oas/verify/verify_oas.py
 Verification checks:
 
-- manifest self-hash
-- artifact hashes
-- anchor presence
-- anchor chain integrity
+- manifest self-hash  
+- artifact integrity  
+- anchor presence  
+- anchor chain continuity  
 
 ---
 
@@ -79,13 +83,15 @@ Trust is appended through signatures.
 Example:
 
 signatures[]
-Signatures do not modify proof hashes.
+Signatures do **not** modify proof hashes.
+
+They only extend the trust layer.
 
 ---
 
 # Node Identity
 
-Nodes publish identity through:
+Nodes declare identity using:
 
 node.json
 Example fields:
@@ -95,6 +101,35 @@ public_key
 network metadata
 ---
 
+# Repository Structure
+
+aiorigins-audit
+
+docs/
+architecture-runtime.md
+architecture-growth.md
+
+oas/
+verify/
+verify_oas.py
+
+README.md
+---
+
+# Project Status
+
+Reference implementation of **Origin Audit Standard v0.1**.
+
+Current components implemented:
+
+- proof generation
+- anchor chain
+- deterministic verifier
+- signature layer
+
+---
+
 # License
 
 Open specification for deterministic audit proof systems.
+
