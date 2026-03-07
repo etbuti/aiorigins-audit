@@ -1,5 +1,6 @@
-mermaid
+## OAS System Architecture
 
+```mermaid
 flowchart LR
 
 A[Target Domain]
