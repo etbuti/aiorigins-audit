@@ -8,10 +8,12 @@
   "site_type": "protocol-led node network",
   "policy_version": "Join Node Spec v1.0",
   "description": "AI Origins publishes node specifications, onboarding rules, verification interfaces, and an audit-aware trust layer for protocol-compatible node participation.",
+
   "operator": {
     "name": "Evan Bei",
     "contact": "toptrust@gmail.com"
   },
+
   "public_entrypoints": {
     "home": "https://aiorigins.org/",
     "join": "https://aiorigins.org/join/",
@@ -21,17 +23,20 @@
     "nodes": "https://aiorigins.org/nodes/",
     "audit": "https://aiorigins.org/audit/"
   },
+
   "machine_readable": {
     "node": "https://aiorigins.org/node.json",
     "portal": "https://aiorigins.org/portal.json",
     "agent": "https://aiorigins.org/agent.json"
   },
+
   "identity": {
     "root_node_id": "core-london-01",
     "root_role": "core",
     "root_label": "London Core Node",
     "root_region": "GB-LON"
   },
+
   "transport": {
     "type": "wireguard",
     "address_space": "10.66.66.0/24",
@@ -44,6 +49,7 @@
     },
     "notes": "Private mesh transport for AI Origins-compatible nodes. Actual peer assignment depends on role and admission tier."
   },
+
   "node_roles": [
     "core",
     "fixed",
@@ -53,6 +59,7 @@
     "service",
     "witness"
   ],
+
   "admission": {
     "self_service": [
       "edge",
@@ -69,6 +76,7 @@
       "core_adjacent"
     ]
   },
+
   "join_check": {
     "path": "/api/join-check",
     "method": "POST",
@@ -78,11 +86,34 @@
       "FAIL"
     ]
   },
+
   "trust_layer": {
     "audit_entry": "https://aiorigins.org/audit/",
     "model": "audit-aware trust layer",
     "principle": "Preserve working audit paths; add onboarding and specification layers alongside stable trust-layer files."
   },
+
+  "oas": {
+    "standard": "Origin Audit Standard",
+    "version": "0.1",
+    "roles": [
+      "runner",
+      "verifier",
+      "signer"
+    ],
+    "public_reports": "https://aiorigins.org/oas/sample/",
+    "verification": "https://aiorigins.org/oas/verify/"
+  },
+
+  "keys": [
+    {
+      "id": "main-ed25519",
+      "purpose": "oas-signature",
+      "algorithm": "ed25519",
+      "public_key": "TO_BE_ADDED"
+    }
+  ],
+
   "recommended_structure": [
     "/",
     "/join/",
@@ -95,6 +126,7 @@
     "/portal.json",
     "/agent.json"
   ],
+
   "status": "active",
-  "updated_at": "2026-03-06T00:00:00Z"
+  "updated_at": "2026-03-07T00:00:00Z"
 }
