@@ -30,8 +30,9 @@ def verify_manifest_self_hash(manifest_path: str) -> Tuple[bool, str, str]:
     if "anchor" in m2 and isinstance(m2["anchor"], dict):
         m2["anchor"].pop("current_hash", None)
     
-    # signatures do not participate in proof hash
-    m2.pop("signatures", None)
+    # signatures are append-only trust layer data
+    # normalize them to the original empty list for proof self-hash
+    m2["signatures"] = []
 
     computed = sha256_hex(canonical_json_bytes(m2))
     ok = (computed == claimed)
