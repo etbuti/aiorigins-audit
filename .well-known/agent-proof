@@ -4,7 +4,7 @@
   "authority": "aiorigins.org",
   "issuer": "AI Origins",
   "title": "AI Origins Proof Discovery",
-  "node": "https://aiorigins.org/node",
+  "node": "https://aiorigins.org/proof/node.json"
   "proof_index": "https://aiorigins.org/proof/index.json",
   "latest_proof": "https://aiorigins.org/proof/latest.json",
   "policy": "AuditVisa v1.0",
