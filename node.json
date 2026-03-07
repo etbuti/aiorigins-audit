@@ -105,15 +105,15 @@
     "verification": "https://aiorigins.org/oas/verify/"
   },
 
-  "keys": [
-    {
-      "id": "main-ed25519",
-      "purpose": "oas-signature",
-      "algorithm": "ed25519",
-      "public_key": "TO_BE_ADDED"
-    }
-  ],
-
+ "keys": [
+  {
+    "id": "oas-ed25519-2026",
+    "purpose": "oas-signature",
+    "algorithm": "ed25519",
+    "public_key": "MCowBQYDK2VwAyEAqeNoCaA/dETEN7bAz1JxH/u2AXQ/+T/5tjl5JUdH/28="
+  }
+]
+  
   "recommended_structure": [
     "/",
     "/join/",
