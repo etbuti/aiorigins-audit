@@ -2,27 +2,73 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Run an Observation Node — AI Origins</title>
-
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Run an Observation Node — AI Origins</title>
 
 <style>
 body{
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:#ffffff;
+  font-family:Arial,sans-serif;
+  max-width:860px;
+  margin:0 auto;
+  padding:48px 20px;
+  line-height:1.8;
   color:#111;
-  line-height:1.6;
-  padding:60px 20px;
-  max-width:760px;
-  margin:auto;
 }
 
-h1{font-size:28px;margin-bottom:10px;}
-h2{margin-top:40px;font-size:20px;}
-code{background:#f4f4f4;padding:3px 6px;border-radius:6px;}
-pre{background:#f6f6f6;padding:14px;border-radius:10px;overflow:auto;}
-a{color:#000;text-decoration:none;border-bottom:1px solid rgba(0,0,0,.2);}
-.small{opacity:.6;font-size:13px;margin-top:40px;}
+h1,h2{
+  font-weight:600;
+}
+
+a{
+  color:#111;
+  text-decoration:none;
+  border-bottom:1px solid rgba(0,0,0,.18);
+}
+
+.diagram{
+  margin:34px 0 20px;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:16px;
+  padding:18px;
+  background:#fff;
+}
+
+.step{
+  border:1px solid rgba(0,0,0,.12);
+  border-radius:12px;
+  padding:18px;
+  margin:18px 0;
+}
+
+code{
+  background:#f4f4f4;
+  padding:3px 6px;
+  border-radius:6px;
+}
+
+pre{
+  background:#f6f6f6;
+  padding:14px;
+  border-radius:10px;
+  overflow:auto;
+}
+
+.small{
+  margin-top:36px;
+  font-size:13px;
+  opacity:.62;
+}
+
+.caption{
+  font-size:14px;
+  opacity:.72;
+  margin-top:10px;
+}
+
+svg text{
+  font-family:Arial,sans-serif;
+  fill:#111;
+}
 </style>
 </head>
 
@@ -35,14 +81,56 @@ Any operator may join the <strong>AI Origins Observation Network</strong>
 by running an independent observation node.
 </p>
 
+<div class="diagram">
+
+<svg viewBox="0 0 760 200" width="100%" height="auto">
+
+<line x1="380" y1="40" x2="200" y2="140" stroke="rgba(0,0,0,.22)" stroke-width="1.4"/>
+<line x1="380" y1="40" x2="380" y2="140" stroke="rgba(0,0,0,.22)" stroke-width="1.4"/>
+<line x1="380" y1="40" x2="560" y2="140" stroke="rgba(0,0,0,.22)" stroke-width="1.4"/>
+
+<rect x="300" y="10" rx="14" ry="14" width="160" height="50"
+fill="#fff" stroke="rgba(0,0,0,.16)"/>
+<text x="380" y="35" text-anchor="middle" font-size="15" font-weight="700">AI Origins</text>
+<text x="380" y="50" text-anchor="middle" font-size="12">protocol anchor</text>
+
+<rect x="140" y="140" rx="12" ry="12" width="120" height="45"
+fill="#fff" stroke="rgba(0,0,0,.16)"/>
+<text x="200" y="165" text-anchor="middle" font-size="13">Observation</text>
+
+<rect x="320" y="140" rx="12" ry="12" width="120" height="45"
+fill="#fff" stroke="rgba(0,0,0,.16)"/>
+<text x="380" y="165" text-anchor="middle" font-size="13">Evidence</text>
+
+<rect x="500" y="140" rx="12" ry="12" width="120" height="45"
+fill="#fff" stroke="rgba(0,0,0,.16)"/>
+<text x="560" y="165" text-anchor="middle" font-size="13">Verification</text>
+
+</svg>
+
+<p class="caption">
+Observation nodes measure internet state and publish verifiable evidence.
+</p>
+
+</div>
+
 <h2>Step 1 — Run an Observation Agent</h2>
 
-<p>Deploy an observation agent capable of performing observation runs
-and producing evidence snapshots.</p>
+<div class="step">
 
-<pre>observe → record → produce evidence</pre>
+<p>Deploy an observation agent capable of performing observation runs.</p>
+
+<pre>
+observe
+record
+produce evidence
+</pre>
+
+</div>
 
 <h2>Step 2 — Declare Node Identity</h2>
+
+<div class="step">
 
 <p>Publish a simple node identity descriptor.</p>
 
@@ -54,7 +142,11 @@ and producing evidence snapshots.</p>
 
 <p>This identity anchors the origin of observation.</p>
 
+</div>
+
 <h2>Step 3 — Produce Evidence</h2>
+
+<div class="step">
 
 <p>Run observations and generate evidence packages containing:</p>
 
@@ -67,7 +159,9 @@ observed state
 
 <p>Evidence may be independently verified.</p>
 
-<h2>Network Principle</h2>
+</div>
+
+<h2>Node Function</h2>
 
 <pre>
 observe
@@ -80,10 +174,20 @@ publish evidence
 <p>The network grows through independent observation nodes.</p>
 
 <p class="small">
-Protocol anchor:
-<a href="https://aiorigins.org">aiorigins.org</a><br>
-Specification repository:
+
+Protocol anchor:  
+<a href="https://aiorigins.org">aiorigins.org</a>
+
+<br><br>
+
+Specification repository:  
 <a href="https://aipoints.org">aipoints.org</a>
+
+<br><br>
+
+Observation network map:  
+<a href="https://aipoints.org/network/">aipoints.org/network</a>
+
 </p>
 
 </body>
