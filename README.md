@@ -8,7 +8,7 @@ and optionally endorsed by independent nodes.
 
 ---
 
-# Core Model
+## Core Model
 
 OAS separates three layers:
 
@@ -20,7 +20,7 @@ Trust grows through **signatures**, not through **consensus complexity**.
 
 ---
 
-# System Architecture
+## Architecture
 
 Two diagrams describe the system.
 
@@ -34,7 +34,7 @@ docs/architecture-growth.md
 
 ---
 
-# Proof Package
+## Proof Package
 
 An OAS report produces a deterministic proof package.
 
@@ -46,7 +46,7 @@ The proof hash is stored in the anchor chain.
 
 ---
 
-# Anchor Chain
+## Anchor Chain
 
 OAS uses an append-only hash chain.
 
@@ -76,23 +76,22 @@ Verification checks:
 
 ---
 
-# Trust Layer
+## Layer
 
 Trust is appended through signatures.
 
 Example:
 
 signatures[]
-Signatures do **not** modify proof hashes.
+Signatures **do not modify proof hashes**.
 
-They only extend the trust layer.
+They extend the trust layer independently of proof generation.
 
 ---
 
-# Node Identity
+## Node Identity
 
 Nodes declare identity using:
-
 node.json
 Example fields:
 
@@ -101,7 +100,7 @@ public_key
 network metadata
 ---
 
-# Repository Structure
+## Repository Structure
 
 aiorigins-audit
 
@@ -115,7 +114,7 @@ verify_oas.py
 
 ---
 
-# Project Status
+## Project Status
 
 Reference implementation of **Origin Audit Standard v0.1**.
 
@@ -128,9 +127,6 @@ Current components implemented:
 
 ---
 
-# License
+## License
 
 Open specification for deterministic audit proof systems.
-
-# aipoints-org-site
-# aipoints-org-site
