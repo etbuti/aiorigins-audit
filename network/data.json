@@ -1,0 +1,44 @@
+{
+  "updated_at": "2026-03-24T12:00:00Z",
+  "nodes": [
+    {
+      "node_id": "lon-01",
+      "city": "London",
+      "country": "UK",
+      "lat": 51.5074,
+      "lng": -0.1278,
+      "role": "core",
+      "status": "online",
+      "trust_level": "core",
+      "last_seen": "2026-03-24T11:59:00Z",
+      "anchors": 120,
+      "governance_actions": 34
+    },
+    {
+      "node_id": "hel-01",
+      "city": "Helsinki",
+      "country": "Finland",
+      "lat": 60.1699,
+      "lng": 24.9384,
+      "role": "core",
+      "status": "online",
+      "trust_level": "core",
+      "last_seen": "2026-03-24T11:58:00Z",
+      "anchors": 98,
+      "governance_actions": 27
+    },
+    {
+      "node_id": "qd-01",
+      "city": "Qingdao",
+      "country": "China",
+      "lat": 36.0671,
+      "lng": 120.3826,
+      "role": "edge",
+      "status": "online",
+      "trust_level": "trusted",
+      "last_seen": "2026-03-24T11:57:00Z",
+      "anchors": 42,
+      "governance_actions": 9
+    }
+  ]
+}
