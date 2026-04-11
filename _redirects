@@ -1,3 +1,3 @@
-/status https://89.167.28.102/status 302
-/status/ https://89.167.28.102/status 302
+/live http://89.167.28.102/status 302
+/live/ http://89.167.28.102/status 302
 /bootkit/install.sh https://89.167.28.102/bootkit/install.sh 302
