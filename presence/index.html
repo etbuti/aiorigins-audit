@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Origins Network</title>
+  <meta name="description" content="Live observation surface for AI Origins nodes and network presence." />
+  <style>
+    :root{
+      --bg:#0a0d12;
+      --panel:#10151d;
+      --soft:#151c26;
+      --line:rgba(255,255,255,.08);
+      --text:#f5f7fb;
+      --muted:rgba(255,255,255,.68);
+      --dim:rgba(255,255,255,.42);
+      --accent:#8fb7ff;
+      --accent2:#c8d8ff;
+      --glow:0 0 40px rgba(143,183,255,.14);
+      --radius:18px;
+      --max:1100px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:radial-gradient(circle at top, #111827 0%, #0a0d12 42%, #07090d 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}
+    a{color:var(--accent2);text-decoration:none}
+    a:hover{opacity:.9}
+
+    .bg-grid{
+      position:fixed; inset:0; pointer-events:none; opacity:.18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+      -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+    }
+
+    .wrap{max-width:var(--max);margin:0 auto;padding:28px 20px 80px}
+
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:10px 0 24px;border-bottom:1px solid var(--line)
+    }
+    .brand{
+      display:flex;flex-direction:column;gap:4px
+    }
+    .brand .eyebrow{
+      font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)
+    }
+    .brand .name{
+      font-size:18px;font-weight:600;letter-spacing:.02em
+    }
+    .nav{
+      display:flex;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--muted)
+    }
+
+    .hero{
+      padding:74px 0 48px;
+      display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center
+    }
+
+    .headline{
+      font-size:clamp(38px,6vw,72px);
+      line-height:.96;
+      letter-spacing:-.04em;
+      margin:0 0 18px
+    }
+
+    .sub{
+      font-size:18px;line-height:1.75;color:var(--muted);max-width:760px;margin:0 0 24px
+    }
+
+    .note{
+      font-size:14px;line-height:1.8;color:var(--dim);max-width:720px
+    }
+
+    .hero-card{
+      position:relative;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:28px;
+      min-height:320px;
+      box-shadow:var(--glow);
+      overflow:hidden;
+    }
+
+    .hero-card:before{
+      content:"";
+      position:absolute;
+      width:360px;height:360px;border-radius:50%;
+      right:-80px;top:-110px;
+      background:radial-gradient(circle, rgba(143,183,255,.18) 0%, rgba(143,183,255,.04) 42%, transparent 72%);
+      filter:blur(8px);
+    }
+
+    .pulse{
+      width:10px;height:10px;border-radius:50%;
+      background:#b9d0ff;display:inline-block;
+      box-shadow:0 0 0 0 rgba(185,208,255,.65);
+      animation:pulse 2.6s infinite;
+      margin-right:10px;
+      vertical-align:middle;
+    }
+
+    @keyframes pulse{
+      0%{box-shadow:0 0 0 0 rgba(185,208,255,.55)}
+      70%{box-shadow:0 0 0 16px rgba(185,208,255,0)}
+      100%{box-shadow:0 0 0 0 rgba(185,208,255,0)}
+    }
+
+    .status-word{
+      font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent2)
+    }
+
+    .card-title{
+      margin:18px 0 10px;font-size:28px;line-height:1.1;letter-spacing:-.03em
+    }
+
+    .card-text{
+      color:var(--muted);font-size:15px;line-height:1.8;max-width:460px
+    }
+
+    .stats{
+      margin-top:24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px
+    }
+
+    .stat{
+      background:rgba(255,255,255,.035);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:16px;padding:14px 16px
+    }
+
+    .stat .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+    .stat .v{font-size:24px;margin-top:8px}
+
+    .section{
+      margin-top:26px;
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:28px
+    }
+
+    .section h2{
+      margin:0 0 12px;font-size:28px;letter-spacing:-.03em
+    }
+
+    .section p{
+      color:var(--muted);line-height:1.85;font-size:16px;margin:0 0 14px
+    }
+
+    .mini{
+      color:var(--dim);font-size:14px
+    }
+
+    .status-shell{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      overflow:hidden;
+      background:#0b0f15;
+    }
+
+    .status-top{
+      display:flex;justify-content:space-between;align-items:center;
+      gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.025)
+    }
+
+    .status-top .left{
+      font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)
+    }
+
+    .status-top .right{
+      font-size:14px;color:var(--muted)
+    }
+
+    iframe{
+      display:block;width:100%;height:720px;border:0;background:#0b0f15
+    }
+
+    .grid-2{
+      display:grid;grid-template-columns:1fr 1fr;gap:20px
+    }
+
+    .box{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:20px;
+      background:rgba(255,255,255,.02)
+    }
+
+    .box h3{
+      margin:0 0 10px;font-size:20px;letter-spacing:-.02em
+    }
+
+    .box p{
+      margin:0;color:var(--muted);font-size:15px;line-height:1.8
+    }
+
+    .cta{
+      margin-top:26px;
+      display:flex;gap:12px;flex-wrap:wrap
+    }
+
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-height:44px;padding:0 16px;border-radius:999px;
+      border:1px solid var(--line);font-size:14px
+    }
+
+    .btn.primary{
+      background:#dfe8ff;color:#08101f;border-color:#dfe8ff;font-weight:600
+    }
+
+    .btn.ghost{
+      background:rgba(255,255,255,.03);color:var(--text)
+    }
+
+    .footer{
+      margin-top:42px;padding-top:24px;border-top:1px solid var(--line);
+      display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+      color:var(--dim);font-size:13px;line-height:1.8
+    }
+
+    @media (max-width: 900px){
+      .hero,.grid-2{grid-template-columns:1fr}
+      iframe{height:560px}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">AI Origins</div>
+        <div class="name">Network Presence Layer</div>
+      </div>
+      <div class="nav">
+        <a href="https://aiorigins.org/">Home</a>
+        <a href="https://aiorigins.org/joinus/">Join</a>
+        <a href="https://aiorigins.org/audit/">Audit</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div>
+        <h1 class="headline">Nodes are not listed.<br>They are observed.</h1>
+        <p class="sub">
+          This page is a live observation surface for the AI Origins network.
+          Nodes appear when active, fall silent when offline, and remain visible only through their present continuity.
+        </p>
+        <p class="note">
+          This layer records presence, not truth. Verification and formal issuance are handled separately through the audit and evidence layers.
+        </p>
+
+        <div class="cta">
+          <a class="btn primary" href="https://aiorigins.org/joinus/">Run a node</a>
+          <a class="btn ghost" href="#live-status">View live status</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="status-word"><span class="pulse"></span>Live presence</div>
+        <div class="card-title">Observable trust begins with visibility.</div>
+        <div class="card-text">
+          A network does not become real because it is claimed. It becomes real when its presence can be witnessed, revisited, and continuously observed.
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="k">Layer</div>
+            <div class="v">Presence</div>
+          </div>
+          <div class="stat">
+            <div class="k">Mode</div>
+            <div class="v">Live</div>
+          </div>
+          <div class="stat">
+            <div class="k">Network</div>
+            <div class="v">Distributed</div>
+          </div>
+          <div class="stat">
+            <div class="k">Access</div>
+            <div class="v">Public</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="live-status">
+      <h2>Live network status</h2>
+      <p>
+        Below is the current public observation interface for active nodes visible through the status layer.
+        The list may include experimental, transitional, or development-era nodes as the network continues to evolve in public.
+      </p>
+      <p class="mini">
+        Presence indicates network visibility only. It does not by itself constitute certification, validation, or issuance.
+      </p>
+
+      <div class="status-shell">
+        <div class="status-top">
+          <div class="left">Public observation surface</div>
+          <div class="right">
+            Live feed from the network status layer
+          </div>
+        </div>
+        <iframe src="https://89.167.28.102/status" title="AI Origins Network Status"></iframe>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid-2">
+        <div class="box">
+          <h3>What this layer means</h3>
+          <p>
+            This is the visibility layer of the network. It shows that nodes exist as present entities within an observable surface. It is a continuity signal, not a judgment.
+          </p>
+        </div>
+        <div class="box">
+          <h3>What this layer does not mean</h3>
+          <p>
+            A visible node is not automatically trusted, certified, or endorsed. Formal statements belong to separate evidence, signature, and audit processes.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Join the network</h2>
+      <p>
+        Any compatible machine running Debian or Armbian may join through the public bootkit path. The network is designed to remain lightweight, reproducible, and directly deployable.
+      </p>
+      <p>
+        Public onboarding entry:
+        <a href="https://aiorigins.org/joinus/">aiorigins.org/joinus/</a>
+      </p>
+    </section>
+
+    <div class="footer">
+      <div>
+        AI Origins Observation Network<br>
+        Presence Layer / Public Interface
+      </div>
+      <div>
+        Observable presence is the first step.<br>
+        Trust, evidence, and issuance follow elsewhere.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
