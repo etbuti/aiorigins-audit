@@ -4,110 +4,367 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Join AI Origins Network</title>
+<meta name="description" content="Deploy a node into the AI Origins observation network. Join the public presence layer through a lightweight Debian or Armbian machine.">
 <style>
-body{font-family:-apple-system;margin:0;background:#fafafa;color:#111;}
-.hero{padding:80px 20px;text-align:center;background:#fff;}
-.section{padding:60px 20px;max-width:900px;margin:auto;}
-.btn{padding:10px 16px;border-radius:8px;background:#2563eb;color:#fff;text-decoration:none;margin:6px;}
-.code{background:#111;color:#0f0;padding:14px;border-radius:8px;font-family:monospace;}
+:root{
+  --bg:#f7f7f5;
+  --panel:#ffffff;
+  --text:#111111;
+  --muted:#5f6368;
+  --line:#e6e7ea;
+  --accent:#1f5eff;
+  --accent-dark:#1748c7;
+  --code:#0f1115;
+  --code-text:#b7ffb7;
+  --tag:#f1f3f7;
+  --max:920px;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;line-height:1.7}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:var(--accent-dark)}
+.hero{
+  padding:88px 20px 72px;
+  text-align:center;
+  background:linear-gradient(to bottom,#ffffff 0%,#fafafa 100%);
+  border-bottom:1px solid var(--line);
+}
+.hero-inner{
+  max-width:var(--max);
+  margin:0 auto;
+}
+.eyebrow{
+  display:inline-block;
+  font-size:12px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+h1{
+  font-size:48px;
+  line-height:1.05;
+  margin:0 0 18px;
+  letter-spacing:-.03em;
+}
+.hero p{
+  max-width:760px;
+  margin:0 auto 26px;
+  color:var(--muted);
+  font-size:18px;
+}
+.hero-actions{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:0 16px;
+  border-radius:10px;
+  text-decoration:none;
+  font-size:14px;
+  border:1px solid transparent;
+}
+.btn.primary{
+  background:var(--accent);
+  color:#fff;
+}
+.btn.primary:hover{
+  background:var(--accent-dark);
+  color:#fff;
+}
+.btn.secondary{
+  background:#fff;
+  color:var(--text);
+  border-color:var(--line);
+}
+.section{
+  padding:56px 20px;
+}
+.section-inner{
+  max-width:var(--max);
+  margin:auto;
+}
+h2{
+  font-size:28px;
+  line-height:1.15;
+  margin:0 0 14px;
+  letter-spacing:-.02em;
+}
+p.lead{
+  color:var(--muted);
+  margin:0 0 18px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:22px 22px;
+}
+.card h3{
+  margin:0 0 10px;
+  font-size:18px;
+}
+.card p{
+  margin:0;
+  color:var(--muted);
+  font-size:15px;
+}
+ul{
+  margin:0;
+  padding-left:20px;
+}
+li{margin:8px 0}
+.code-wrap{
+  background:var(--code);
+  color:var(--code-text);
+  padding:18px;
+  border-radius:14px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  font-size:14px;
+  overflow:auto;
+  border:1px solid #1f232b;
+}
+.note{
+  margin-top:16px;
+  padding:14px 16px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--muted);
+  font-size:14px;
+}
+.links{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.linkbox{
+  display:block;
+  padding:14px 16px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--text);
+  min-width:220px;
+}
+.linkbox strong{
+  display:block;
+  margin-bottom:4px;
+  font-size:15px;
+}
+.linkbox span{
+  color:var(--muted);
+  font-size:14px;
+}
+.tag{
+  display:inline-block;
+  margin-top:16px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--tag);
+  color:var(--muted);
+  font-size:13px;
+}
+.footer{
+  padding:28px 20px 60px;
+}
+.footer-inner{
+  max-width:var(--max);
+  margin:auto;
+  padding-top:22px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:14px;
+}
+@media (max-width: 760px){
+  h1{font-size:38px}
+  .grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 
 <body>
 
 <div class="hero">
-  <h1>AI Origins Network</h1>
-  <p>Deploy a node. Emit verifiable presence. Join the observation layer.</p>
-
-  <a class="btn" href="#start">Get Started</a>
+  <div class="hero-inner">
+    <div class="eyebrow">AI Origins · Observation Protocol</div>
+    <h1>Join AI Origins Network</h1>
+    <p>
+      Deploy a node. Emit observable presence. Join a lightweight public observation network through any compatible Debian or Armbian machine.
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#start">Get Started</a>
+      <a class="btn secondary" href="https://aiorigins.org/presence/">View Presence Layer</a>
+    </div>
+  </div>
 </div>
 
 <div class="section">
-  <h2>What This Is</h2>
-  <ul>
-    <li>A minimal entry into a distributed observation network</li>
-    <li>No image distribution. No complex setup</li>
-    <li>A node is created and begins emitting signals</li>
-  </ul>
+  <div class="section-inner">
+    <h2>What This Is</h2>
+    <p class="lead">
+      AI Origins Network is a minimal entry into a distributed observation layer. A node is not manually provisioned as an artifact. It is initiated, identified, and made visible through live network behavior.
+    </p>
+    <div class="grid">
+      <div class="card">
+        <h3>Lightweight entry</h3>
+        <p>No image distribution. No heavy setup. A compatible machine can join directly through a single public install path.</p>
+      </div>
+      <div class="card">
+        <h3>Observable presence</h3>
+        <p>After joining, the node begins emitting heartbeat signals and becomes visible through the public presence surface.</p>
+      </div>
+    </div>
+  </div>
 </div>
-  
+
 <div class="section">
-  <h2>What You Become</h2>
-  <ul>
-    <li>A node in a global governance network</li>
-    <li>A verifier of evidence</li>
-    <li>A participant in distributed decision-making</li>
-  </ul>
+  <div class="section-inner">
+    <h2>What Joining Means</h2>
+    <ul>
+      <li>A machine becomes a visible node in the observation network</li>
+      <li>A node receives a local identity and begins live continuity signaling</li>
+      <li>The system remains minimal, reproducible, and directly deployable</li>
+      <li>Presence is public; certification and issuance remain separate layers</li>
+    </ul>
+  </div>
 </div>
-  
+
 <div class="section">
-  <h2>Node Types</h2>
-  <ul>
-    <li><strong>Core Node</strong> — governance + aggregation</li>
-    <li><strong>Edge Node</strong> — execution + observation</li>
-    <li><strong>External Node</strong> — partner participation</li>
-  </ul>
+  <div class="section-inner">
+    <h2>Node Types</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Core Node</h3>
+        <p>Aggregation, coordination, and structural continuity.</p>
+      </div>
+      <div class="card">
+        <h3>Edge Node</h3>
+        <p>Execution, observation, and distributed network participation.</p>
+      </div>
+      <div class="card">
+        <h3>External Node</h3>
+        <p>Partner, affiliate, or third-party machine joining the public observation layer.</p>
+      </div>
+      <div class="card">
+        <h3>Presence Layer</h3>
+        <p>The public visibility surface through which nodes can be observed while active.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="section" id="start">
-  <h2>Install</h2>
+  <div class="section-inner">
+    <h2>Install</h2>
+    <p class="lead">
+      Run the public bootkit installer on any compatible Debian or Armbian machine:
+    </p>
 
-  <div class="code">
-curl -sSL https://89.167.28.102/bootkit/install.sh | bash
-  </div>
-
-  <p>Execution will:</p>
-  <ul>
-    <li>Generate node identity</li>
-    <li>Attempt registration</li>
-    <li>Start heartbeat automatically</li>
-  </ul>
+    <div class="code-wrap">curl -sSL https://aiorigins.org/bootkit/install.sh | bash</div>
 
     <div class="note">
-    Current release: v1.3<br>
-    Enrollment is operator-controlled at this stage.
+      Current release: v1.3<br>
+      Public install path has been moved to the domain entry.<br>
+      Enrollment and network-side behavior remain operator-controlled at this stage.
+    </div>
   </div>
 </div>
 
 <div class="section">
-  <h2>Requirements</h2>
-  <ul>
-    <li>Debian / Armbian compatible machine</li>
-    <li>Network connection (IPv4/IPv6)</li>
-    <li>“Any machine can become a node”</li>
-  </ul>
-</div>
-
-  <div class="section">
-  <h2>Node Behavior</h2>
-  <ul>
-    <li>Each node generates a unique identity</li>
-    <li>Heartbeat establishes observable presence</li>
-    <li>Data is emitted to the network layer</li>
-    <li>Nodes are not deployed. They emerge.</li>
-  </ul>
-</div>
-
-  <div class="section">
-  <h2>Status</h2>
-  <p>
-    Nodes are visible through the network status layer.<br>
-    (Public interface under construction)
-  </p>
-  
-<div class="section">
-  <h2>After Joining</h2>
-  <ul>
-    <li>Your node receives an identity</li>
-    <li>Participates in governance</li>
-    <li>Produces verifiable certificates</li>
-  </ul>
-</div>
-
-    <div class="tag">
-    AI Origins · Observation Protocol
+  <div class="section-inner">
+    <h2>What Execution Does</h2>
+    <ul>
+      <li>Generate a local node identity</li>
+      <li>Attempt registration into the observation layer</li>
+      <li>Start heartbeat automatically</li>
+      <li>Make the node visible through the network presence surface when active</li>
+    </ul>
   </div>
 </div>
-    
+
+<div class="section">
+  <div class="section-inner">
+    <h2>Requirements</h2>
+    <ul>
+      <li>Debian or Armbian compatible machine</li>
+      <li>Network connection available</li>
+      <li>Basic shell access</li>
+      <li>Any suitable machine may become a node</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-inner">
+    <h2>Node Behavior</h2>
+    <ul>
+      <li>Each node generates a unique local identity at deployment time</li>
+      <li>Heartbeat establishes observable continuity</li>
+      <li>Presence data is emitted to the network layer</li>
+      <li>Nodes are not merely deployed. They emerge as visible participants</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-inner">
+    <h2>Status</h2>
+    <p class="lead">
+      Nodes are visible through the public network presence layer.  
+      This is the live observation surface of the network, where active nodes can be seen as present entities.
+    </p>
+
+    <div class="links">
+      <a class="linkbox" href="https://aiorigins.org/presence/">
+        <strong>Presence Layer</strong>
+        <span>View the public narrative surface for live node visibility</span>
+      </a>
+
+      <a class="linkbox" href="https://aiorigins.org/status/">
+        <strong>Status Layer</strong>
+        <span>Open the direct live status interface</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-inner">
+    <h2>After Joining</h2>
+    <p class="lead">
+      Joining the observation network does not by itself create a certificate or audit statement. It establishes presence first.
+    </p>
+    <ul>
+      <li>Your node receives an active local identity</li>
+      <li>Your machine becomes part of the distributed observation surface</li>
+      <li>Heartbeat continuity makes the node publicly visible when online</li>
+      <li>Evidence, signatures, and formal issuance belong to later layers</li>
+    </ul>
+
+    <div class="tag">AI Origins · Observation Protocol</div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    Deploy a node. Emit observable presence. Join the public observation layer.
+  </div>
+</div>
+
 </body>
 </html>
